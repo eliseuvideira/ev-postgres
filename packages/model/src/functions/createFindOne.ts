@@ -1,4 +1,4 @@
-import { FindProps } from "../types/FindProps";
+import { FindOneProps } from "../types/FindOneProps";
 import { parseFilter } from "./parseFilter";
 
 interface CreateFindOneProps {
@@ -7,7 +7,7 @@ interface CreateFindOneProps {
 
 export const createFindOne =
   <T>({ table }: CreateFindOneProps) =>
-  async ({ database, filter = {} }: FindProps<T>) => {
+  async ({ database, filter = {} }: FindOneProps<T>) => {
     const row: any | null = await database
       .from(table)
       .modify(parseFilter(filter))

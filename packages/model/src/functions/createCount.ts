@@ -1,4 +1,4 @@
-import { FindProps } from "../types/FindProps";
+import { CountProps } from "../types/CountProps";
 import { parseFilter } from "./parseFilter";
 
 interface CreateCountProps {
@@ -7,7 +7,7 @@ interface CreateCountProps {
 
 export const createCount =
   <T>({ table }: CreateCountProps) =>
-  async ({ database, filter = {} }: FindProps<T>) => {
+  async ({ database, filter = {} }: CountProps<T>) => {
     const { count } = await database
       .from(table)
       .modify(parseFilter(filter))
