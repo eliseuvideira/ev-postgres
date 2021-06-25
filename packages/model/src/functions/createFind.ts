@@ -1,4 +1,5 @@
 import { FindProps } from "../types/FindProps";
+import { parseFilter } from "./parseFilter";
 
 interface CreateFindProps {
   table: string;
@@ -6,8 +7,8 @@ interface CreateFindProps {
 
 export const createFind =
   <T>({ table }: CreateFindProps) =>
-  async ({ database }: FindProps) => {
-    const rows = await database.from(table);
+  async ({ database, filter = {} }: FindProps<T>) => {
+    const rows: any[] = await database.from(table).modify(parseFilter(filter));
 
     const items: T[] = rows.map((item) => item);
 

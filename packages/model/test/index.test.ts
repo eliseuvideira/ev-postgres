@@ -70,7 +70,7 @@ const packages = [
 ];
 
 interface PackageProps {
-  package_id: number;
+  package_id?: number;
   name: string;
   version: string;
   downloads: number;
@@ -113,6 +113,17 @@ describe("createModel", () => {
   const PACKAGE_GET_PRIMARY_KEY = ({ package_id }: PackageProps) => ({
     package_id,
   });
+  const parseRow = ({
+    name,
+    version,
+    downloads,
+    last_published,
+  }: PackageProps) => ({
+    name,
+    version,
+    downloads,
+    last_published,
+  });
 
   it("has the table name", () => {
     expect.assertions(1);
@@ -152,17 +163,99 @@ describe("createModel", () => {
     expect(rows.length).toBeGreaterThan(0);
     expect(rows.length).toBe(packages.length);
 
-    const sort = (a: any, b: any) => (a.name > b.name ? 1 : -1);
+    const sort = (a: PackageProps, b: PackageProps) =>
+      a.name > b.name ? 1 : -1;
 
-    const parsedRows = rows.map(
-      ({ name, version, downloads, last_published }) => ({
-        name,
-        version,
-        downloads,
-        last_published,
-      })
-    );
+    const parsedRows = rows.map(parseRow);
 
     expect(parsedRows.sort(sort)).toEqual(packages.sort(sort));
+  });
+
+  it("finds rows with a filter $eq", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const rows = await model.find({
+      database: DATABASE,
+      filter: { $eq: { name: "lodash" } },
+    });
+
+    expect(rows.length).toBe(1);
+    expect(rows.map(parseRow)).toEqual(
+      packages.filter((pkg) => pkg.name === "lodash")
+    );
+  });
+
+  it("finds rows with a filter $sort", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const rows = await model.find({
+      database: DATABASE,
+      filter: { $sort: [{ column: "name", order: "desc" }] },
+    });
+
+    expect(rows.length).toBe(packages.length);
+    expect(rows.map(parseRow)).toEqual(
+      packages.sort((a, b) => (a.name > b.name ? -1 : +1))
+    );
+  });
+
+  it("finds rows with a filter $limit", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const rows = await model.find({
+      database: DATABASE,
+      filter: { $limit: 1 },
+    });
+
+    expect(rows.length).toBe(1);
+
+    const name = rows[0].name;
+
+    expect(rows.map(parseRow)).toEqual(
+      packages.filter((pkg) => pkg.name === name)
+    );
+  });
+
+  it("finds rows with a filter $offset", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const rows = await model.find({
+      database: DATABASE,
+      filter: {
+        $limit: 1,
+        $offset: 1,
+        $sort: [{ column: "name", order: "asc" }],
+      },
+    });
+
+    expect(rows.length).toBe(1);
+
+    const pkgs = packages.sort((a, b) => (a.name > b.name ? +1 : -1));
+
+    expect(rows.map(parseRow)).toEqual([pkgs[1]]);
   });
 });
