@@ -5,6 +5,12 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^15.12.4"
+    "@types/node": "^15.12.4",
+    "knex": "^0.95.6",
+    "pg": "^8.6.0"
+  },
+  "peerDependencies": {
+    "knex": "^0.95.6",
+    "pg": "^8.6.0"
   }
 }

@@ -1,1 +1,1 @@
-console.log("Hello World 👋!");
+export { createModel } from "./functions/createModel";
