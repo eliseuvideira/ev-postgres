@@ -354,4 +354,42 @@ describe("createModel", () => {
 
     expect(totalCount2).toBe(0);
   });
+
+  it("checks if exists rows on true", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const exists1 = await model.exists({ database: DATABASE });
+
+    expect(exists1).toBe(true);
+
+    const exists2 = await model.exists({
+      database: DATABASE,
+      filter: { $eq: { name: "chalk" } },
+    });
+
+    expect(exists2).toBe(true);
+  });
+
+  it("check if exists rows on false", async () => {
+    expect.assertions(1);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const exists = await model.exists({
+      database: DATABASE,
+      filter: { $eq: { downloads: 2000 } },
+    });
+
+    expect(exists).toBe(false);
+  });
 });
