@@ -392,4 +392,34 @@ describe("createModel", () => {
 
     expect(exists).toBe(false);
   });
+
+  it("inserts a row", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const pkgs = [
+      {
+        name: "pg",
+        version: "8.6.0",
+        downloads: 2_041_784,
+        last_published: "2 months ago",
+      },
+      {
+        name: "knex",
+        version: "0.95.6",
+        downloads: 733_973,
+        last_published: "a month ago",
+      },
+    ];
+
+    const rows = await model.insert({ database: DATABASE }, pkgs);
+
+    expect(rows.length).toBe(pkgs.length);
+    expect(rows.map(parseRow)).toEqual(pkgs);
+  });
 });
