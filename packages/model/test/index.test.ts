@@ -316,4 +316,42 @@ describe("createModel", () => {
     expect(pkg).not.toBeTruthy();
     expect(pkg).toBe(null);
   });
+
+  it("counts the numbers of rows", async () => {
+    expect.assertions(1);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const totalCount = await model.count({ database: DATABASE });
+
+    expect(totalCount).toBe(packages.length);
+  });
+
+  it("counts the numbers of rows with a filter", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const totalCount1 = await model.count({
+      database: DATABASE,
+      filter: { $eq: { name: "webpack" } },
+    });
+
+    expect(totalCount1).toBe(1);
+
+    const totalCount2 = await model.count({
+      database: DATABASE,
+      filter: { $eq: { name: "invalid" } },
+    });
+
+    expect(totalCount2).toBe(0);
+  });
 });

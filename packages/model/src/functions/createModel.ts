@@ -1,3 +1,4 @@
+import { createCount } from "./createCount";
 import { createFind } from "./createFind";
 import { createFindOne } from "./createFindOne";
 
@@ -16,11 +17,13 @@ export const createModel = <T>({
 
   const find = createFind<T>({ table });
   const findOne = createFindOne<T>({ table });
+  const count = createCount<T>({ table });
 
   return {
     table,
     fields,
     find,
     findOne,
+    count,
   };
 };
