@@ -3,17 +3,14 @@ version: "3"
 services:
   postgres:
     image: postgres
-    environment:
-      - PGDATA=/var/lib/postgresql/data
-      - POSTGRES_USER=postgres_user
-      - POSTGRES_PASSWORD=postgres_password
-      - POSTGRES_DB=postgres_db
+    env_file:
+      - .env
     ports:
-      - 8888:8888
+      - $POSTGRES_PORT:$POSTGRES_PORT
     restart: always
     volumes:
-      - postgres_volume:/var/lib/postgresql/data
-    command: -p 8888
+      - postgres_volume:$PGDATA
+    command: -p $POSTGRES_PORT
     logging:
       driver: "json-file"
       options:

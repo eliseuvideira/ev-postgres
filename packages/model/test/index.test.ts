@@ -1,28 +1,32 @@
+import { dotenv } from "@ev-fns/dotenv";
+
+dotenv();
+
 import { createModel } from "../src/index";
 import knex from "knex";
 
-const DB_CONFIG = {
-  HOST: "localhost",
-  PORT: 8888,
-  USERNAME: "postgres_user",
-  PASSWORD: "postgres_password",
-  DATABASE: "postgres_db",
+const CONFIG = {
+  HOST: process.env.POSTGRES_HOST,
+  PORT: +(process.env.POSTGRES_PORT || 5432),
+  USERNAME: process.env.POSTGRES_USER,
+  PASSWORD: process.env.POSTGRES_PASSWORD,
+  DATABASE: process.env.POSTGRES_DB,
   MIN_POOL: 2,
-  MAX_POOL: 2,
+  MAX_POOL: 20,
 };
 
 const DATABASE = knex({
   client: "pg",
   connection: {
-    host: DB_CONFIG.HOST,
-    port: DB_CONFIG.PORT,
-    user: DB_CONFIG.USERNAME,
-    password: DB_CONFIG.PASSWORD,
-    database: DB_CONFIG.DATABASE,
+    host: CONFIG.HOST,
+    port: CONFIG.PORT,
+    user: CONFIG.USERNAME,
+    password: CONFIG.PASSWORD,
+    database: CONFIG.DATABASE,
   },
   pool: {
-    min: DB_CONFIG.MIN_POOL,
-    max: DB_CONFIG.MAX_POOL,
+    min: CONFIG.MIN_POOL,
+    max: CONFIG.MAX_POOL,
   },
 });
 
@@ -31,39 +35,46 @@ const packages = [
     name: "lodash",
     version: "4.17.21",
     downloads: 40_405_306,
+    last_published: "4 months ago",
   },
   {
     name: "chalk",
     version: "4.1.1",
     downloads: 95_588_662,
+    last_published: "2 months ago",
   },
   {
     name: "react",
     version: "17.0.2",
     downloads: 10_735_055,
+    last_published: "3 months ago",
   },
   {
     name: "express",
     version: "4.17.1",
     downloads: 16_908_105,
+    last_published: "2 years ago",
   },
   {
     name: "vue",
     version: "2.6.14",
     downloads: 2_532_689,
+    last_published: "18 days ago",
   },
   {
     name: "webpack",
     version: "5.40.0",
     downloads: 16_175_795,
+    last_published: "4 days ago",
   },
 ];
 
 interface PackageProps {
-  packageId: number;
+  package_id: number;
   name: string;
   version: string;
   downloads: number;
+  last_published: string;
 }
 
 beforeAll(async () => {
@@ -76,6 +87,7 @@ beforeAll(async () => {
     table.text("name").notNullable();
     table.text("version").notNullable();
     table.integer("downloads").notNullable();
+    table.string("last_published").notNullable();
   });
 
   await DATABASE.from("packages").insert(packages);
@@ -95,9 +107,11 @@ describe("createModel", () => {
     "packageId",
     "name",
     "version",
+    "downloads",
+    "lastPublished",
   ] as (keyof PackageProps)[];
-  const PACKAGE_GET_PRIMARY_KEY = ({ packageId }: PackageProps) => ({
-    packageId,
+  const PACKAGE_GET_PRIMARY_KEY = ({ package_id }: PackageProps) => ({
+    package_id,
   });
 
   it("has the table name", () => {
@@ -140,11 +154,14 @@ describe("createModel", () => {
 
     const sort = (a: any, b: any) => (a.name > b.name ? 1 : -1);
 
-    const parsedRows = rows.map(({ name, version, downloads }) => ({
-      name,
-      version,
-      downloads,
-    }));
+    const parsedRows = rows.map(
+      ({ name, version, downloads, last_published }) => ({
+        name,
+        version,
+        downloads,
+        last_published,
+      })
+    );
 
     expect(parsedRows.sort(sort)).toEqual(packages.sort(sort));
   });

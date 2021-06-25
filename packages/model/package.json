@@ -5,6 +5,7 @@
   "types": "lib/index.d.ts",
   "license": "MIT",
   "devDependencies": {
+    "@ev-fns/dotenv": "^1.0.1",
     "@types/node": "^15.12.4",
     "knex": "^0.95.6",
     "pg": "^8.6.0"
