@@ -4,5 +4,26 @@
   "main": "N/A",
   "author": "Eliseu Videira <eliseuvideira1@gmail.com>",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "jest": "^27.0.5",
+    "lerna": "^4.0.0",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.4"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build",
+    "clean": "lerna clean",
+    "coverage": "jest --coverage && xdg-open coverage/lcov-report/index.html &>/dev/null",
+    "format": "prettier --write 'packages/*/src/**'",
+    "lint": "eslint --max-warnings=0 'packages/*/src/**'",
+    "prepare": "husky install",
+    "test": "jest",
+    "watch": "jest --watch"
+  }
 }
