@@ -1,4 +1,5 @@
 import { createFind } from "./createFind";
+import { createFindOne } from "./createFindOne";
 
 interface CreateModelProps<T> {
   table: string;
@@ -14,10 +15,12 @@ export const createModel = <T>({
   getPrimaryKey;
 
   const find = createFind<T>({ table });
+  const findOne = createFindOne<T>({ table });
 
   return {
     table,
     fields,
     find,
+    findOne,
   };
 };

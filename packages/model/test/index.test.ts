@@ -258,4 +258,62 @@ describe("createModel", () => {
 
     expect(rows.map(parseRow)).toEqual([pkgs[1]]);
   });
+
+  it("finds one", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const pkg = await model.findOne({ database: DATABASE });
+
+    expect(pkg).toBeDefined();
+
+    const name = pkg.name;
+
+    expect(parseRow(pkg)).toEqual(packages.find((pkg) => pkg.name === name));
+  });
+
+  it("finds one with a filter $eq", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const name = "webpack";
+
+    const pkg = await model.findOne({
+      database: DATABASE,
+      filter: { $eq: { name } },
+    });
+
+    expect(pkg).toBeDefined();
+    expect(parseRow(pkg)).toEqual(packages.find((pkg) => pkg.name === name));
+  });
+
+  it("finds one if none found returns null", async () => {
+    expect.assertions(2);
+
+    const model = createModel<PackageProps>({
+      table: PACKAGE_TABLE,
+      fields: PACKAGE_FIELDS,
+      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
+    });
+
+    const name = "invalid";
+
+    const pkg = await model.findOne({
+      database: DATABASE,
+      filter: { $eq: { name } },
+    });
+
+    expect(pkg).not.toBeTruthy();
+    expect(pkg).toBe(null);
+  });
 });
