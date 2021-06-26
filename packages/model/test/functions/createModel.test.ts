@@ -20,13 +20,17 @@ const insert = jest.fn();
 const createInsert = jest.fn(() => insert);
 jest.mock("../../src/functions/createInsert", () => ({ createInsert }));
 
+const insertOne = jest.fn();
+const createInsertOne = jest.fn(() => insertOne);
+jest.mock("../../src/functions/createInsertOne", () => ({ createInsertOne }));
+
 import { createModel } from "../../src/functions/createModel";
 import { PackageProps } from "../utils/PackageProps";
 import { table } from "../utils/table";
 
 describe("createModel", () => {
   it("creates a model", async () => {
-    expect.assertions(27);
+    expect.assertions(30);
 
     const fields = ["name", "version"] as (keyof PackageProps)[];
     const getPrimaryKey = ({ name }: PackageProps) => ({ name });
@@ -55,10 +59,13 @@ describe("createModel", () => {
     expect(createFindOne).toHaveBeenLastCalledWith({ table });
     expect(createInsert).toHaveBeenCalledTimes(1);
     expect(createInsert).toHaveBeenLastCalledWith({ table });
+    expect(createInsertOne).toHaveBeenCalledTimes(1);
+    expect(createInsertOne).toHaveBeenLastCalledWith({ table });
     expect(count).not.toHaveBeenCalled();
     expect(exists).not.toHaveBeenCalled();
     expect(find).not.toHaveBeenCalled();
     expect(findOne).not.toHaveBeenCalled();
     expect(insert).not.toHaveBeenCalled();
+    expect(insertOne).not.toHaveBeenCalled();
   });
 });

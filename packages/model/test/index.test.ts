@@ -56,6 +56,32 @@ describe("createModel", () => {
   const ascending = (a: PackageProps, b: PackageProps) =>
     a.name > b.name ? +1 : -1;
 
+  const extraPackages: PackageProps[] = [
+    {
+      name: "yarn",
+      version: "1.22.10",
+      license: "BSD-2-Clause",
+      description: "📦🐈 Fast, reliable, and secure dependency management.",
+      created_at: "2012-03-21T17:54:19.255Z",
+      updated_at: "2021-04-24T14:45:06.588Z",
+      homepage: "https://github.com/yarnpkg/yarn#readme",
+      repository: "git+https://github.com/yarnpkg/yarn.git",
+      downloads: 2141439,
+    },
+    {
+      name: "lerna",
+      version: "4.0.0",
+      license: "MIT",
+      description:
+        "A tool for managing JavaScript projects with multiple packages.",
+      created_at: "2015-12-04T12:25:28.376Z",
+      updated_at: "2021-06-23T12:18:57.300Z",
+      homepage: "https://github.com/lerna/lerna#readme",
+      repository: "git+https://github.com/lerna/lerna.git",
+      downloads: 1196004,
+    },
+  ];
+
   it("has the table name", () => {
     expect.assertions(1);
 
@@ -259,40 +285,30 @@ describe("createModel", () => {
     expect(exists).toBe(false);
   });
 
-  it("inserts a row", async () => {
+  it("inserts rows", async () => {
     expect.assertions(2);
 
     const model = __model();
 
-    const pkgs: PackageProps[] = [
-      {
-        name: "yarn",
-        version: "1.22.10",
-        license: "BSD-2-Clause",
-        description: "📦🐈 Fast, reliable, and secure dependency management.",
-        created_at: "2012-03-21T17:54:19.255Z",
-        updated_at: "2021-04-24T14:45:06.588Z",
-        homepage: "https://github.com/yarnpkg/yarn#readme",
-        repository: "git+https://github.com/yarnpkg/yarn.git",
-        downloads: 2141439,
-      },
-      {
-        name: "lerna",
-        version: "4.0.0",
-        license: "MIT",
-        description:
-          "A tool for managing JavaScript projects with multiple packages.",
-        created_at: "2015-12-04T12:25:28.376Z",
-        updated_at: "2021-06-23T12:18:57.300Z",
-        homepage: "https://github.com/lerna/lerna#readme",
-        repository: "git+https://github.com/lerna/lerna.git",
-        downloads: 1196004,
-      },
-    ];
+    const pkgs = extraPackages;
 
     const rows = await model.insert({ database: database }, pkgs);
 
     expect(rows.length).toBe(pkgs.length);
     expect(rows).toEqual(pkgs);
+  });
+
+  it("inserts one row", async () => {
+    expect.assertions(1);
+
+    const model = __model();
+
+    const item = extraPackages[Math.floor(Math.random() * 2)];
+
+    item.name += Math.random();
+
+    const inserted = await model.insertOne({ database }, item);
+
+    expect(inserted).toEqual(item);
   });
 });

@@ -1,4 +1,6 @@
-export const packages = [
+import { PackageProps } from "./PackageProps";
+
+export const packages: PackageProps[] = [
   {
     name: "lodash",
     version: "4.17.21",
