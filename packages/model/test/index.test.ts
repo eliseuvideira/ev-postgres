@@ -26,16 +26,20 @@ beforeAll(async () => {
     table.text("repository").notNullable();
     table.integer("downloads").notNullable();
   });
-
-  await database.from(table).insert(packages);
 });
 
 afterAll(async () => {
-  await database.from(table).delete();
-
   await database.raw(`drop table if exists ${table};`);
 
   await database.destroy();
+});
+
+beforeEach(async () => {
+  await database.from(table).insert(packages);
+});
+
+afterEach(async () => {
+  await database.from(table).delete();
 });
 
 describe("createModel", () => {
