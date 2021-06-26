@@ -5,11 +5,12 @@ import { createFindOne } from "./createFindOne";
 import { createInsert } from "./createInsert";
 import { createInsertOne } from "./createInsertOne";
 import { createUpdate } from "./createUpdate";
+import { createUpdateOne } from "./createUpdateOne";
 
 interface CreateModelProps<T> {
   table: string;
   fields: (keyof T & string)[];
-  getPrimaryKey: (instance: T) => Partial<T>;
+  getPrimaryKey: (instance: Partial<T>) => Partial<T>;
 }
 
 export const createModel = <T>({
@@ -17,8 +18,6 @@ export const createModel = <T>({
   fields,
   getPrimaryKey,
 }: CreateModelProps<T>) => {
-  getPrimaryKey;
-
   const find = createFind<T>({ table });
   const findOne = createFindOne<T>({ table });
   const count = createCount<T>({ table });
@@ -26,6 +25,7 @@ export const createModel = <T>({
   const insert = createInsert<T>({ table });
   const insertOne = createInsertOne<T>({ table });
   const update = createUpdate<T>({ table });
+  const updateOne = createUpdateOne<T>({ table, getPrimaryKey });
 
   return {
     table,
@@ -37,5 +37,6 @@ export const createModel = <T>({
     insert,
     insertOne,
     update,
+    updateOne,
   };
 };

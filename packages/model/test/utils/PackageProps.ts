@@ -1,5 +1,4 @@
 export interface PackageProps {
-  package_id?: number;
   name: string;
   version: string;
   license: string;

@@ -28,18 +28,37 @@ const update = jest.fn();
 const createUpdate = jest.fn(() => update);
 jest.mock("../../src/functions/createUpdate", () => ({ createUpdate }));
 
+const updateOne = jest.fn();
+const createUpdateOne = jest.fn(() => updateOne);
+jest.mock("../../src/functions/createUpdateOne", () => ({ createUpdateOne }));
+
 import { createModel } from "../../src/functions/createModel";
 import { PackageProps } from "../utils/PackageProps";
 import { table } from "../utils/table";
 
 describe("createModel", () => {
   it("creates a model", async () => {
-    expect.assertions(33);
+    expect.assertions(36);
 
-    const fields = ["name", "version"] as (keyof PackageProps)[];
-    const getPrimaryKey = ({ name }: PackageProps) => ({ name });
+    const fields = [
+      "name",
+      "version",
+      "license",
+      "homepage",
+      "description",
+      "downloads",
+      "created_at",
+      "updated_at",
+      "repository",
+    ] as (keyof PackageProps)[];
 
-    const model = createModel<PackageProps>({ table, fields, getPrimaryKey });
+    const getPrimaryKey = ({ name }: Partial<PackageProps>) => ({ name });
+
+    const model = createModel<PackageProps>({
+      table,
+      fields,
+      getPrimaryKey,
+    });
 
     expect(model.table).toBe(table);
     expect(model.fields).toBe(fields);
@@ -67,6 +86,8 @@ describe("createModel", () => {
     expect(createInsertOne).toHaveBeenCalledWith({ table });
     expect(createUpdate).toHaveBeenCalledTimes(1);
     expect(createUpdate).toHaveBeenCalledWith({ table });
+    expect(createUpdateOne).toHaveBeenCalledTimes(1);
+    expect(createUpdateOne).toHaveBeenCalledWith({ table, getPrimaryKey });
     expect(count).not.toHaveBeenCalled();
     expect(exists).not.toHaveBeenCalled();
     expect(find).not.toHaveBeenCalled();
@@ -74,5 +95,6 @@ describe("createModel", () => {
     expect(insert).not.toHaveBeenCalled();
     expect(insertOne).not.toHaveBeenCalled();
     expect(update).not.toHaveBeenCalled();
+    expect(updateOne).not.toHaveBeenCalled();
   });
 });

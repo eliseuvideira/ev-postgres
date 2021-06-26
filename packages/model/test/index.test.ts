@@ -39,15 +39,11 @@ afterAll(async () => {
 });
 
 describe("createModel", () => {
-  const getPrimaryKey = ({ package_id }: PackageProps) => ({
-    package_id,
-  });
-
   const __model = () =>
     createModel<PackageProps>({
       table,
       fields,
-      getPrimaryKey,
+      getPrimaryKey: ({ name }) => ({ name }),
     });
 
   const descending = (a: PackageProps, b: PackageProps) =>
@@ -356,5 +352,35 @@ describe("createModel", () => {
 
     expect(values.length).toBe(items.length);
     expect(values.sort(ascending)).toEqual(items.sort(ascending));
+  });
+
+  it("updates a single row", async () => {
+    expect.assertions(1);
+
+    const model = __model();
+
+    const item = sample();
+
+    item.downloads = 0;
+
+    const value = await model.updateOne(
+      { database, instance: item },
+      { downloads: 0 }
+    );
+
+    expect(value).toEqual(item);
+  });
+
+  it("updates a single row, if none found returns null", async () => {
+    expect.assertions(1);
+
+    const model = __model();
+
+    const value = await model.updateOne(
+      { database, instance: { name: "any" } },
+      { downloads: 1 }
+    );
+
+    expect(value).toEqual(null);
   });
 });

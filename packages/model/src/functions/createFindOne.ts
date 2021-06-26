@@ -7,7 +7,7 @@ interface CreateFindOneProps {
 
 export const createFindOne =
   <T>({ table }: CreateFindOneProps) =>
-  async ({ database, filter = {} }: FindOneProps<T>) => {
+  async ({ database, filter = {} }: FindOneProps<T>): Promise<T | null> => {
     const row: any | null = await database
       .from(table)
       .modify(parseFilter(filter))
