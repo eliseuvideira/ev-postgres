@@ -7,7 +7,7 @@ interface PackageProps {
 
 describe("createCount", () => {
   it("creates a count method", async () => {
-    expect.assertions(7);
+    expect.assertions(8);
 
     const table = "packages";
     const pkgName = "knex";
@@ -40,5 +40,6 @@ describe("createCount", () => {
     expect(andWhere).toHaveBeenCalledTimes(1);
     expect(andWhere).toHaveBeenCalledWith("name", "=", pkgName);
     expect(from).toHaveBeenCalledTimes(1);
+    expect(from).toHaveBeenCalledWith(table);
   });
 });
