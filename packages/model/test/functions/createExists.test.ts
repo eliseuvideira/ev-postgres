@@ -5,7 +5,9 @@ describe("createExists", () => {
   it("creates an exists method", async () => {
     expect.assertions(4);
 
-    const count = jest.fn(() => 1);
+    const number = Math.floor(Math.random() * 2);
+
+    const count = jest.fn(() => number);
 
     const exists = createExists<PackageProps>(count as any);
 
@@ -14,7 +16,7 @@ describe("createExists", () => {
 
     const value = await exists({ database, filter });
 
-    expect(value).toBe(true);
+    expect(value).toBe(number > 0);
     expect(count).toHaveBeenCalled();
     expect(count).toHaveBeenCalledTimes(1);
     expect(count.mock.calls[0]).toEqual([{ database, filter }]);

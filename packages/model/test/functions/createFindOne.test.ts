@@ -1,15 +1,15 @@
 import { createFindOne } from "../../src/functions/createFindOne";
 import { PackageProps } from "../utils/PackageProps";
+import { sample } from "../utils/sample";
+import { table } from "../utils/table";
 
 describe("createFindOne", () => {
   it("creates a find one method", async () => {
     expect.assertions(7);
 
-    const table = "packages";
-
     const findOne = createFindOne<PackageProps>({ table });
 
-    const item = { id: Math.random() };
+    const item = sample();
 
     const first = jest.fn(() => item);
     const andWhere = jest.fn();
@@ -22,15 +22,18 @@ describe("createFindOne", () => {
     const from = jest.fn(() => ({ modify }));
     const database = { from } as any;
 
-    const name = "react";
+    const pkg = sample();
 
-    const value = await findOne({ database, filter: { $eq: { name } } });
+    const value = await findOne({
+      database,
+      filter: { $eq: { name: pkg.name } },
+    });
 
     expect(value).toEqual(item);
     expect(first).toHaveBeenCalledTimes(1);
     expect(modify).toHaveBeenCalledTimes(1);
     expect(andWhere).toHaveBeenCalledTimes(1);
-    expect(andWhere).toHaveBeenCalledWith("name", "=", name);
+    expect(andWhere).toHaveBeenCalledWith("name", "=", pkg.name);
     expect(from).toHaveBeenCalledTimes(1);
     expect(from).toHaveBeenCalledWith(table);
   });

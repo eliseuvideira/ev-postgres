@@ -1,12 +1,13 @@
 import { createCount } from "../../src/functions/createCount";
 import { PackageProps } from "../utils/PackageProps";
+import { sample } from "../utils/sample";
+import { table } from "../utils/table";
 
 describe("createCount", () => {
   it("creates a count method", async () => {
     expect.assertions(8);
 
-    const table = "packages";
-    const pkgName = "knex";
+    const pkg = sample();
 
     const count = createCount<PackageProps>({ table });
 
@@ -27,14 +28,17 @@ describe("createCount", () => {
 
     const database = { from } as any;
 
-    const value = await count({ database, filter: { $eq: { name: pkgName } } });
+    const value = await count({
+      database,
+      filter: { $eq: { name: pkg.name } },
+    });
 
     expect(value).toBe(totalCount);
     expect(first).toHaveBeenCalledTimes(1);
     expect(countFn).toHaveBeenCalledTimes(1);
     expect(modify).toHaveBeenCalledTimes(1);
     expect(andWhere).toHaveBeenCalledTimes(1);
-    expect(andWhere).toHaveBeenCalledWith("name", "=", pkgName);
+    expect(andWhere).toHaveBeenCalledWith("name", "=", pkg.name);
     expect(from).toHaveBeenCalledTimes(1);
     expect(from).toHaveBeenCalledWith(table);
   });

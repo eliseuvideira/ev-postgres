@@ -1,15 +1,15 @@
 import { parseFilter } from "../../src/functions/parseFilter";
 import { PackageProps } from "../utils/PackageProps";
+import { sample } from "../utils/sample";
 
 describe("parseFilter", () => {
   it("sets the $eq filter", () => {
     expect.assertions(4);
 
-    const name = "typescript";
-    const version = "4.3.4";
+    const pkg = sample();
 
     const modify = parseFilter<PackageProps>({
-      $eq: { name, version },
+      $eq: { name: pkg.name, version: pkg.version },
     });
 
     const andWhere = jest.fn();
@@ -22,8 +22,8 @@ describe("parseFilter", () => {
 
     expect(andWhere).toHaveBeenCalled();
     expect(andWhere).toHaveBeenCalledTimes(2);
-    expect(andWhere.mock.calls[0]).toEqual(["name", "=", name]);
-    expect(andWhere.mock.calls[1]).toEqual(["version", "=", version]);
+    expect(andWhere.mock.calls[0]).toEqual(["name", "=", pkg.name]);
+    expect(andWhere.mock.calls[1]).toEqual(["version", "=", pkg.version]);
   });
 
   it("sets the $limit filter", () => {

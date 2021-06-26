@@ -22,12 +22,12 @@ jest.mock("../../src/functions/createInsert", () => ({ createInsert }));
 
 import { createModel } from "../../src/functions/createModel";
 import { PackageProps } from "../utils/PackageProps";
+import { table } from "../utils/table";
 
 describe("createModel", () => {
   it("creates a model", async () => {
     expect.assertions(27);
 
-    const table = "packages";
     const fields = ["name", "version"] as (keyof PackageProps)[];
     const getPrimaryKey = ({ name }: PackageProps) => ({ name });
 

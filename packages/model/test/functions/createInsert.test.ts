@@ -1,12 +1,11 @@
 import { createInsert } from "../../src/functions/createInsert";
 import { PackageProps } from "../utils/PackageProps";
 import { packages } from "../utils/packages";
+import { table } from "../utils/table";
 
 describe("createInsert", () => {
   it("creates an insert method", async () => {
     expect.assertions(7);
-
-    const table = "packages";
 
     const insert = createInsert<PackageProps>({ table });
 
