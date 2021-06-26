@@ -36,13 +36,17 @@ const _delete = jest.fn();
 const createDelete = jest.fn(() => _delete);
 jest.mock("../../src/functions/createDelete", () => ({ createDelete }));
 
+const deleteOne = jest.fn();
+const createDeleteOne = jest.fn(() => deleteOne);
+jest.mock("../../src/functions/createDeleteOne", () => ({ createDeleteOne }));
+
 import { createModel } from "../../src/functions/createModel";
 import { PackageProps } from "../utils/PackageProps";
 import { table } from "../utils/table";
 
 describe("createModel", () => {
   it("creates a model", async () => {
-    expect.assertions(39);
+    expect.assertions(42);
 
     const fields = [
       "name",
@@ -94,6 +98,8 @@ describe("createModel", () => {
     expect(createUpdateOne).toHaveBeenCalledWith({ table, getPrimaryKey });
     expect(createDelete).toHaveBeenCalledTimes(1);
     expect(createDelete).toHaveBeenCalledWith({ table });
+    expect(createDeleteOne).toHaveBeenCalledTimes(1);
+    expect(createDeleteOne).toHaveBeenCalledWith({ table, getPrimaryKey });
     expect(count).not.toHaveBeenCalled();
     expect(exists).not.toHaveBeenCalled();
     expect(find).not.toHaveBeenCalled();
@@ -103,5 +109,6 @@ describe("createModel", () => {
     expect(update).not.toHaveBeenCalled();
     expect(updateOne).not.toHaveBeenCalled();
     expect(_delete).not.toHaveBeenCalled();
+    expect(deleteOne).not.toHaveBeenCalled();
   });
 });

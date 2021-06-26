@@ -1,5 +1,6 @@
 import { createCount } from "./createCount";
 import { createDelete } from "./createDelete";
+import { createDeleteOne } from "./createDeleteOne";
 import { createExists } from "./createExists";
 import { createFind } from "./createFind";
 import { createFindOne } from "./createFindOne";
@@ -28,6 +29,7 @@ export const createModel = <T>({
   const update = createUpdate<T>({ table });
   const updateOne = createUpdateOne<T>({ table, getPrimaryKey });
   const _delete = createDelete<T>({ table });
+  const deleteOne = createDeleteOne<T>({ table, getPrimaryKey });
 
   return {
     table,
@@ -41,5 +43,6 @@ export const createModel = <T>({
     update,
     updateOne,
     delete: _delete,
+    deleteOne,
   };
 };

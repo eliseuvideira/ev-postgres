@@ -430,4 +430,23 @@ describe("createModel", () => {
     expect(newItems.length).toBe(packages.length);
     expect(newItems.sort(ascending)).toEqual(packages.sort(ascending));
   });
+
+  it("delete one row", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const item = sample();
+
+    await model.deleteOne({ database, instance: item });
+
+    const items = await model.find({ database });
+
+    expect(items.length).toBe(packages.length - 1);
+    expect(items.sort(ascending)).toEqual(
+      packages.filter((x) => x !== item).sort(ascending)
+    );
+
+    await model.insertOne({ database }, item);
+  });
 });
