@@ -383,4 +383,51 @@ describe("createModel", () => {
 
     expect(value).toEqual(null);
   });
+
+  it("deletes rows", async () => {
+    expect.assertions(4);
+
+    const model = __model();
+
+    await model.delete({ database });
+
+    const items = await model.find({ database });
+
+    expect(items.length).toBe(0);
+    expect(items).toEqual([]);
+
+    await model.insert({ database }, packages);
+
+    const newItems = await model.find({ database });
+
+    expect(newItems.length).toBe(packages.length);
+    expect(newItems.sort(ascending)).toEqual(packages.sort(ascending));
+  });
+
+  it("deletes rows with a filter", async () => {
+    expect.assertions(4);
+
+    const model = __model();
+
+    const license = "MIT";
+
+    await model.delete({ database, filter: { $eq: { license } } });
+
+    const items = await model.find({ database });
+
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.sort(ascending)).toEqual(
+      packages.filter((x) => x.license !== license).sort(ascending)
+    );
+
+    await model.insert(
+      { database },
+      packages.filter((x) => x.license === license)
+    );
+
+    const newItems = await model.find({ database });
+
+    expect(newItems.length).toBe(packages.length);
+    expect(newItems.sort(ascending)).toEqual(packages.sort(ascending));
+  });
 });
