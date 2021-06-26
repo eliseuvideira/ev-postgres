@@ -1,4 +1,4 @@
-import { CountProps } from "../types/CountProps";
+import { CountProps } from "../types/functions/CountProps";
 import { parseFilter } from "./parseFilter";
 
 interface CreateCountProps {

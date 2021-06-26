@@ -1,4 +1,4 @@
-import { UpdateProps } from "../types/UpdateProps";
+import { UpdateProps } from "../types/functions/UpdateProps";
 import { parseFilter } from "./parseFilter";
 
 interface CreateUpdateProps {

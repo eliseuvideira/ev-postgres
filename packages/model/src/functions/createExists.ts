@@ -1,5 +1,5 @@
-import { CountProps } from "../types/CountProps";
-import { ExistsProps } from "../types/ExistsProps";
+import { CountProps } from "../types/functions/CountProps";
+import { ExistsProps } from "../types/functions/ExistsProps";
 
 export const createExists =
   <T>(count: ({ database, filter }: CountProps<T>) => Promise<number>) =>

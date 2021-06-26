@@ -1,4 +1,4 @@
-import { UpdateOneProps } from "../types/UpdateOneProps";
+import { UpdateOneProps } from "../types/functions/UpdateOneProps";
 
 interface CreateUpdateOneProps<T> {
   table: string;

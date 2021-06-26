@@ -1,4 +1,4 @@
-import { InsertOneProps } from "../types/InsertOneProps";
+import { InsertOneProps } from "../types/functions/InsertOneProps";
 
 interface CreateInsertOneProps {
   table: string;

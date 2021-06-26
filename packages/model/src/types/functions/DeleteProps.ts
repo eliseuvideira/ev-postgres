@@ -1,7 +1,7 @@
 import { Knex } from "knex";
-import { FilterProps } from "./FilterProps";
+import { FilterProps } from "../FilterProps";
 
-export interface UpdateProps<T> {
+export interface DeleteProps<T> {
   database: Knex;
   filter?: Omit<Omit<Omit<FilterProps<T>, "$limit">, "$offset">, "$sort">;
 }

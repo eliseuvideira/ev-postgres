@@ -1,4 +1,4 @@
-import { DeleteOneProps } from "../types/DeleteOneProps";
+import { DeleteOneProps } from "../types/functions/DeleteOneProps";
 
 interface CreateDeleteOneProps<T> {
   table: string;

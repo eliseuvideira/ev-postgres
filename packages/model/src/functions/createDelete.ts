@@ -1,4 +1,4 @@
-import { DeleteProps } from "../types/DeleteProps";
+import { DeleteProps } from "../types/functions/DeleteProps";
 import { parseFilter } from "./parseFilter";
 
 interface CreateDeleteProps {

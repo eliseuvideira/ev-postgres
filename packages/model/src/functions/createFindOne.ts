@@ -1,4 +1,4 @@
-import { FindOneProps } from "../types/FindOneProps";
+import { FindOneProps } from "../types/functions/FindOneProps";
 import { parseFilter } from "./parseFilter";
 
 interface CreateFindOneProps {
