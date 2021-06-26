@@ -4,6 +4,7 @@ import { createFind } from "./createFind";
 import { createFindOne } from "./createFindOne";
 import { createInsert } from "./createInsert";
 import { createInsertOne } from "./createInsertOne";
+import { createUpdate } from "./createUpdate";
 
 interface CreateModelProps<T> {
   table: string;
@@ -24,6 +25,7 @@ export const createModel = <T>({
   const exists = createExists<T>(count);
   const insert = createInsert<T>({ table });
   const insertOne = createInsertOne<T>({ table });
+  const update = createUpdate<T>({ table });
 
   return {
     table,
@@ -34,5 +36,6 @@ export const createModel = <T>({
     exists,
     insert,
     insertOne,
+    update,
   };
 };

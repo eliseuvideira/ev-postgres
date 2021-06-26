@@ -10,5 +10,5 @@ export const createFind =
   async ({ database, filter = {} }: FindProps<T>) => {
     const rows: any[] = await database.from(table).modify(parseFilter(filter));
 
-    return rows;
+    return rows as T[];
   };

@@ -17,5 +17,5 @@ export const createFindOne =
       return null;
     }
 
-    return row;
+    return row as T;
   };

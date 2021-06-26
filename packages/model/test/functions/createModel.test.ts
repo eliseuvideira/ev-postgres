@@ -24,13 +24,17 @@ const insertOne = jest.fn();
 const createInsertOne = jest.fn(() => insertOne);
 jest.mock("../../src/functions/createInsertOne", () => ({ createInsertOne }));
 
+const update = jest.fn();
+const createUpdate = jest.fn(() => update);
+jest.mock("../../src/functions/createUpdate", () => ({ createUpdate }));
+
 import { createModel } from "../../src/functions/createModel";
 import { PackageProps } from "../utils/PackageProps";
 import { table } from "../utils/table";
 
 describe("createModel", () => {
   it("creates a model", async () => {
-    expect.assertions(30);
+    expect.assertions(33);
 
     const fields = ["name", "version"] as (keyof PackageProps)[];
     const getPrimaryKey = ({ name }: PackageProps) => ({ name });
@@ -50,22 +54,25 @@ describe("createModel", () => {
     expect(model.insert).toBeDefined();
     expect(model.insert).toEqual(insert);
     expect(createCount).toHaveBeenCalledTimes(1);
-    expect(createCount).toHaveBeenLastCalledWith({ table });
+    expect(createCount).toHaveBeenCalledWith({ table });
     expect(createExists).toHaveBeenCalledTimes(1);
-    expect(createExists).toHaveBeenLastCalledWith(count);
+    expect(createExists).toHaveBeenCalledWith(count);
     expect(createFind).toHaveBeenCalledTimes(1);
-    expect(createFind).toHaveBeenLastCalledWith({ table });
+    expect(createFind).toHaveBeenCalledWith({ table });
     expect(createFindOne).toHaveBeenCalledTimes(1);
-    expect(createFindOne).toHaveBeenLastCalledWith({ table });
+    expect(createFindOne).toHaveBeenCalledWith({ table });
     expect(createInsert).toHaveBeenCalledTimes(1);
-    expect(createInsert).toHaveBeenLastCalledWith({ table });
+    expect(createInsert).toHaveBeenCalledWith({ table });
     expect(createInsertOne).toHaveBeenCalledTimes(1);
-    expect(createInsertOne).toHaveBeenLastCalledWith({ table });
+    expect(createInsertOne).toHaveBeenCalledWith({ table });
+    expect(createUpdate).toHaveBeenCalledTimes(1);
+    expect(createUpdate).toHaveBeenCalledWith({ table });
     expect(count).not.toHaveBeenCalled();
     expect(exists).not.toHaveBeenCalled();
     expect(find).not.toHaveBeenCalled();
     expect(findOne).not.toHaveBeenCalled();
     expect(insert).not.toHaveBeenCalled();
     expect(insertOne).not.toHaveBeenCalled();
+    expect(update).not.toHaveBeenCalled();
   });
 });

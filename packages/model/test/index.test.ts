@@ -182,6 +182,10 @@ describe("createModel", () => {
 
     const pkg = await model.findOne({ database: database });
 
+    if (!pkg) {
+      fail();
+    }
+
     expect(pkg).toBeDefined();
 
     const name = pkg.name;
@@ -296,6 +300,8 @@ describe("createModel", () => {
 
     expect(rows.length).toBe(pkgs.length);
     expect(rows).toEqual(pkgs);
+
+    packages.push(...rows);
   });
 
   it("inserts one row", async () => {
@@ -310,5 +316,45 @@ describe("createModel", () => {
     const inserted = await model.insertOne({ database }, item);
 
     expect(inserted).toEqual(item);
+
+    packages.push(item);
+  });
+
+  it("updates rows", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    packages.forEach((item) => {
+      item.description = "npm package";
+    });
+
+    const values = await model.update(
+      { database },
+      { description: "npm package" }
+    );
+
+    expect(values.length).toBe(packages.length);
+    expect(values.sort(ascending)).toEqual(packages.sort(ascending));
+  });
+
+  it("updates rows with a filter", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const items = packages.filter((item) => item.license === "MIT");
+
+    items.forEach((item) => {
+      item.version = "0.0.0";
+    });
+
+    const values = await model.update(
+      { database, filter: { $eq: { license: "MIT" } } },
+      { version: "0.0.0" }
+    );
+
+    expect(values.length).toBe(items.length);
+    expect(values.sort(ascending)).toEqual(items.sort(ascending));
   });
 });
