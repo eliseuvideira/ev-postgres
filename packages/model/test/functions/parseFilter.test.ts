@@ -115,10 +115,9 @@ describe("parseFilter", () => {
     modify1(builder1);
 
     expect(andWhereRaw1).toHaveBeenCalledTimes(1);
-    expect(andWhereRaw1).toHaveBeenCalledWith(
-      "lower(unaccent(name)) like lower(unaccent(?))",
-      ["%" + $like1.name + "%"]
-    );
+    expect(andWhereRaw1).toHaveBeenCalledWith("lower(name) like lower(?)", [
+      "%" + $like1.name + "%",
+    ]);
 
     const $like2 = { name: "%[_" };
 
@@ -130,10 +129,9 @@ describe("parseFilter", () => {
     modify2(builder2);
 
     expect(andWhereRaw2).toHaveBeenCalledTimes(1);
-    expect(andWhereRaw2).toHaveBeenCalledWith(
-      "lower(unaccent(name)) like lower(unaccent(?))",
-      ["%" + "[%][[][_]" + "%"]
-    );
+    expect(andWhereRaw2).toHaveBeenCalledWith("lower(name) like lower(?)", [
+      "%" + "[%][[][_]" + "%",
+    ]);
   });
 
   it("sets the $regex filter", () => {

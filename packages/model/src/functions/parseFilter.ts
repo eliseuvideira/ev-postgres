@@ -20,7 +20,7 @@ export const parseFilter =
     if (filter.$like) {
       const keys = Object.keys(filter.$like) as (keyof T)[];
       for (const key of keys) {
-        builder.andWhereRaw(`lower(unaccent(${key})) like lower(unaccent(?))`, [
+        builder.andWhereRaw(`lower(${key}) like lower(?)`, [
           "%" + escapeLike(`${filter.$like[key as keyof T]}`) + "%",
         ]);
       }

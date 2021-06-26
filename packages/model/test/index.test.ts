@@ -322,12 +322,12 @@ describe("createModel", () => {
     const model = __model();
 
     packages.forEach((item) => {
-      item.description = "npm package";
+      item.repository = "npm package";
     });
 
     const values = await model.update(
       { database },
-      { description: "npm package" }
+      { repository: "npm package" }
     );
 
     expect(values.length).toBe(packages.length);
@@ -448,5 +448,69 @@ describe("createModel", () => {
     );
 
     await model.insertOne({ database }, item);
+  });
+
+  it("finds using filter $in", async () => {
+    expect.assertions(3);
+
+    const model = __model();
+
+    const names = ["webpack", "typescript"];
+
+    const items = packages.filter((pkg) => names.includes(pkg.name));
+
+    const values = await model.find({
+      database,
+      filter: { $in: { name: names } },
+    });
+
+    expect(values.length).toBe(items.length);
+    expect(values.sort(ascending)).toEqual(items.sort(ascending));
+    expect(values.map((x) => x.name).sort()).toEqual(names.sort());
+  });
+
+  it("finds using filter $regex", async () => {
+    expect.assertions(4);
+
+    const model = __model();
+
+    const regex1 = /Apache/;
+    const items1 = await model.find({
+      database,
+      filter: { $regex: { license: regex1 } },
+    });
+
+    expect(items1.length).toBeGreaterThan(0);
+    expect(items1.sort(ascending)).toEqual(
+      packages.filter((pkg) => regex1.test(pkg.license)).sort(ascending)
+    );
+
+    const regex2 = /mit/i;
+    const items2 = await model.find({
+      database,
+      filter: { $regex: { license: regex2 } },
+    });
+
+    expect(items2.length).toBeGreaterThan(0);
+    expect(items2.sort(ascending)).toEqual(
+      packages.filter((pkg) => regex2.test(pkg.license)).sort(ascending)
+    );
+  });
+
+  it("finds using filter $like", async () => {
+    expect.assertions(3);
+
+    const model = __model();
+
+    const items = packages.filter((x) => /framework/.test(x.description));
+
+    const values = await model.find({
+      database,
+      filter: { $like: { description: "framework" } },
+    });
+
+    expect(values.length).toBeGreaterThan(0);
+    expect(values.length).toEqual(items.length);
+    expect(values.sort(ascending)).toEqual(items.sort(ascending));
   });
 });
