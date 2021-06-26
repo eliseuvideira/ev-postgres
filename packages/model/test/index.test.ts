@@ -3,225 +3,124 @@ import { dotenv } from "@ev-fns/dotenv";
 dotenv();
 
 import { createModel } from "../src/index";
-import knex from "knex";
-
-const CONFIG = {
-  HOST: process.env.POSTGRES_HOST,
-  PORT: +(process.env.POSTGRES_PORT || 5432),
-  USERNAME: process.env.POSTGRES_USER,
-  PASSWORD: process.env.POSTGRES_PASSWORD,
-  DATABASE: process.env.POSTGRES_DB,
-  MIN_POOL: 2,
-  MAX_POOL: 20,
-};
-
-const DATABASE = knex({
-  client: "pg",
-  connection: {
-    host: CONFIG.HOST,
-    port: CONFIG.PORT,
-    user: CONFIG.USERNAME,
-    password: CONFIG.PASSWORD,
-    database: CONFIG.DATABASE,
-  },
-  pool: {
-    min: CONFIG.MIN_POOL,
-    max: CONFIG.MAX_POOL,
-  },
-});
-
-const packages = [
-  {
-    name: "lodash",
-    version: "4.17.21",
-    downloads: 40_405_306,
-    last_published: "4 months ago",
-  },
-  {
-    name: "chalk",
-    version: "4.1.1",
-    downloads: 95_588_662,
-    last_published: "2 months ago",
-  },
-  {
-    name: "react",
-    version: "17.0.2",
-    downloads: 10_735_055,
-    last_published: "3 months ago",
-  },
-  {
-    name: "express",
-    version: "4.17.1",
-    downloads: 16_908_105,
-    last_published: "2 years ago",
-  },
-  {
-    name: "vue",
-    version: "2.6.14",
-    downloads: 2_532_689,
-    last_published: "18 days ago",
-  },
-  {
-    name: "webpack",
-    version: "5.40.0",
-    downloads: 16_175_795,
-    last_published: "4 days ago",
-  },
-];
-
-interface PackageProps {
-  package_id?: number;
-  name: string;
-  version: string;
-  downloads: number;
-  last_published: string;
-}
+import { database } from "./utils/database";
+import { table } from "./utils/table";
+import { packages } from "./utils/packages";
+import { PackageProps } from "./utils/PackageProps";
+import { fields } from "./utils/fields";
+import { sample } from "./utils/sample";
 
 beforeAll(async () => {
-  await DATABASE.raw(`select 1 as db_status`);
+  await database.raw(`select 1 as db_status`);
 
-  await DATABASE.raw("drop table if exists packages;");
+  await database.raw(`drop table if exists ${table};`);
 
-  await DATABASE.schema.createTable("packages", (table) => {
-    table.increments("package_id").primary();
-    table.text("name").notNullable();
+  await database.schema.createTable(table, (table) => {
+    table.text("name").notNullable().primary();
     table.text("version").notNullable();
+    table.text("license").notNullable();
+    table.text("description").notNullable();
+    table.text("created_at").notNullable();
+    table.text("updated_at").notNullable();
+    table.text("homepage").notNullable();
+    table.text("repository").notNullable();
     table.integer("downloads").notNullable();
-    table.string("last_published").notNullable();
   });
 
-  await DATABASE.from("packages").insert(packages);
+  await database.from(table).insert(packages);
 });
 
 afterAll(async () => {
-  await DATABASE.from("packages").delete();
+  await database.from(table).delete();
 
-  await DATABASE.raw("drop table if exists packages;");
+  await database.raw(`drop table if exists ${table};`);
 
-  await DATABASE.destroy();
+  await database.destroy();
 });
 
 describe("createModel", () => {
-  const PACKAGE_TABLE = "packages";
-  const PACKAGE_FIELDS = [
-    "packageId",
-    "name",
-    "version",
-    "downloads",
-    "lastPublished",
-  ] as (keyof PackageProps)[];
-  const PACKAGE_GET_PRIMARY_KEY = ({ package_id }: PackageProps) => ({
+  const getPrimaryKey = ({ package_id }: PackageProps) => ({
     package_id,
   });
-  const parseRow = ({
-    name,
-    version,
-    downloads,
-    last_published,
-  }: PackageProps) => ({
-    name,
-    version,
-    downloads,
-    last_published,
-  });
+
+  const __model = () =>
+    createModel<PackageProps>({
+      table,
+      fields,
+      getPrimaryKey,
+    });
+
+  const descending = (a: PackageProps, b: PackageProps) =>
+    a.name > b.name ? -1 : +1;
+
+  const ascending = (a: PackageProps, b: PackageProps) =>
+    a.name > b.name ? +1 : -1;
 
   it("has the table name", () => {
     expect.assertions(1);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
-    expect(model.table).toBe(PACKAGE_TABLE);
+    expect(model.table).toBe(table);
   });
 
   it("has the table fields", () => {
     expect.assertions(1);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
-    expect(model.fields).toEqual(PACKAGE_FIELDS);
+    expect(model.fields).toEqual(fields);
   });
 
   it("finds all rows", async () => {
     expect.assertions(3);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
-    const rows = await model.find({ database: DATABASE });
+    const rows = await model.find({ database: database });
 
     expect(rows.length).toBeGreaterThan(0);
     expect(rows.length).toBe(packages.length);
-
-    const sort = (a: PackageProps, b: PackageProps) =>
-      a.name > b.name ? 1 : -1;
-
-    const parsedRows = rows.map(parseRow);
-
-    expect(parsedRows.sort(sort)).toEqual(packages.sort(sort));
+    expect(rows.sort(ascending)).toEqual(packages.sort(ascending));
   });
 
   it("finds rows with a filter $eq", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
+
+    const item = sample();
 
     const rows = await model.find({
-      database: DATABASE,
-      filter: { $eq: { name: "lodash" } },
+      database: database,
+      filter: { $eq: { name: item.name } },
     });
 
     expect(rows.length).toBe(1);
-    expect(rows.map(parseRow)).toEqual(
-      packages.filter((pkg) => pkg.name === "lodash")
-    );
+    expect(rows).toEqual(packages.filter((pkg) => pkg.name === item.name));
   });
 
   it("finds rows with a filter $sort", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
     const rows = await model.find({
-      database: DATABASE,
+      database: database,
       filter: { $sort: [{ column: "name", order: "desc" }] },
     });
 
     expect(rows.length).toBe(packages.length);
-    expect(rows.map(parseRow)).toEqual(
-      packages.sort((a, b) => (a.name > b.name ? -1 : +1))
-    );
+    expect(rows).toEqual(packages.sort(descending));
   });
 
   it("finds rows with a filter $limit", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
     const rows = await model.find({
-      database: DATABASE,
+      database: database,
       filter: { $limit: 1 },
     });
 
@@ -229,22 +128,16 @@ describe("createModel", () => {
 
     const name = rows[0].name;
 
-    expect(rows.map(parseRow)).toEqual(
-      packages.filter((pkg) => pkg.name === name)
-    );
+    expect(rows).toEqual(packages.filter((pkg) => pkg.name === name));
   });
 
   it("finds rows with a filter $offset", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
     const rows = await model.find({
-      database: DATABASE,
+      database: database,
       filter: {
         $limit: 1,
         $offset: 1,
@@ -253,63 +146,48 @@ describe("createModel", () => {
     });
 
     expect(rows.length).toBe(1);
-
-    const pkgs = packages.sort((a, b) => (a.name > b.name ? +1 : -1));
-
-    expect(rows.map(parseRow)).toEqual([pkgs[1]]);
+    expect(rows).toEqual(packages.sort(ascending).slice(1, 2));
   });
 
   it("finds one", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
-    const pkg = await model.findOne({ database: DATABASE });
+    const pkg = await model.findOne({ database: database });
 
     expect(pkg).toBeDefined();
 
     const name = pkg.name;
 
-    expect(parseRow(pkg)).toEqual(packages.find((pkg) => pkg.name === name));
+    expect(pkg).toEqual(packages.find((pkg) => pkg.name === name));
   });
 
   it("finds one with a filter $eq", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
-    const name = "webpack";
+    const name = sample().name;
 
     const pkg = await model.findOne({
-      database: DATABASE,
+      database: database,
       filter: { $eq: { name } },
     });
 
     expect(pkg).toBeDefined();
-    expect(parseRow(pkg)).toEqual(packages.find((pkg) => pkg.name === name));
+    expect(pkg).toEqual(packages.find((pkg) => pkg.name === name));
   });
 
   it("finds one if none found returns null", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
     const name = "invalid";
 
     const pkg = await model.findOne({
-      database: DATABASE,
+      database: database,
       filter: { $eq: { name } },
     });
 
@@ -320,13 +198,9 @@ describe("createModel", () => {
   it("counts the numbers of rows", async () => {
     expect.assertions(1);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
-    const totalCount = await model.count({ database: DATABASE });
+    const totalCount = await model.count({ database: database });
 
     expect(totalCount).toBe(packages.length);
   });
@@ -334,21 +208,19 @@ describe("createModel", () => {
   it("counts the numbers of rows with a filter", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
+
+    const item = sample();
 
     const totalCount1 = await model.count({
-      database: DATABASE,
-      filter: { $eq: { name: "webpack" } },
+      database: database,
+      filter: { $eq: { name: item.name } },
     });
 
     expect(totalCount1).toBe(1);
 
     const totalCount2 = await model.count({
-      database: DATABASE,
+      database: database,
       filter: { $eq: { name: "invalid" } },
     });
 
@@ -358,19 +230,17 @@ describe("createModel", () => {
   it("checks if exists rows on true", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
-    const exists1 = await model.exists({ database: DATABASE });
+    const exists1 = await model.exists({ database: database });
 
     expect(exists1).toBe(true);
 
+    const item = sample();
+
     const exists2 = await model.exists({
-      database: DATABASE,
-      filter: { $eq: { name: "chalk" } },
+      database: database,
+      filter: { $eq: { name: item.name } },
     });
 
     expect(exists2).toBe(true);
@@ -379,15 +249,11 @@ describe("createModel", () => {
   it("check if exists rows on false", async () => {
     expect.assertions(1);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
     const exists = await model.exists({
-      database: DATABASE,
-      filter: { $eq: { downloads: 2000 } },
+      database: database,
+      filter: { $eq: { downloads: -1 } },
     });
 
     expect(exists).toBe(false);
@@ -396,30 +262,37 @@ describe("createModel", () => {
   it("inserts a row", async () => {
     expect.assertions(2);
 
-    const model = createModel<PackageProps>({
-      table: PACKAGE_TABLE,
-      fields: PACKAGE_FIELDS,
-      getPrimaryKey: PACKAGE_GET_PRIMARY_KEY,
-    });
+    const model = __model();
 
-    const pkgs = [
+    const pkgs: PackageProps[] = [
       {
-        name: "pg",
-        version: "8.6.0",
-        downloads: 2_041_784,
-        last_published: "2 months ago",
+        name: "yarn",
+        version: "1.22.10",
+        license: "BSD-2-Clause",
+        description: "📦🐈 Fast, reliable, and secure dependency management.",
+        created_at: "2012-03-21T17:54:19.255Z",
+        updated_at: "2021-04-24T14:45:06.588Z",
+        homepage: "https://github.com/yarnpkg/yarn#readme",
+        repository: "git+https://github.com/yarnpkg/yarn.git",
+        downloads: 2141439,
       },
       {
-        name: "knex",
-        version: "0.95.6",
-        downloads: 733_973,
-        last_published: "a month ago",
+        name: "lerna",
+        version: "4.0.0",
+        license: "MIT",
+        description:
+          "A tool for managing JavaScript projects with multiple packages.",
+        created_at: "2015-12-04T12:25:28.376Z",
+        updated_at: "2021-06-23T12:18:57.300Z",
+        homepage: "https://github.com/lerna/lerna#readme",
+        repository: "git+https://github.com/lerna/lerna.git",
+        downloads: 1196004,
       },
     ];
 
-    const rows = await model.insert({ database: DATABASE }, pkgs);
+    const rows = await model.insert({ database: database }, pkgs);
 
     expect(rows.length).toBe(pkgs.length);
-    expect(rows.map(parseRow)).toEqual(pkgs);
+    expect(rows).toEqual(pkgs);
   });
 });
