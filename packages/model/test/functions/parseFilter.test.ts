@@ -84,4 +84,91 @@ describe("parseFilter", () => {
     expect(orderBy).toHaveBeenCalledTimes(1);
     expect(orderBy.mock.calls[0][0]).toEqual($sort);
   });
+
+  it("sets the $in filter", () => {
+    expect.assertions(2);
+
+    const $in = { name: ["webpack", "typescript"] };
+
+    const modify = parseFilter<PackageProps>({ $in });
+
+    const whereIn = jest.fn();
+
+    const builder = { whereIn } as any;
+
+    modify(builder);
+
+    expect(whereIn).toHaveBeenCalledTimes(1);
+    expect(whereIn).toHaveBeenLastCalledWith("name", $in.name);
+  });
+
+  it("sets the $like filter", () => {
+    expect.assertions(4);
+
+    const $like1 = { name: "pr" };
+
+    const modify1 = parseFilter<PackageProps>({ $like: $like1 });
+
+    const andWhereRaw1 = jest.fn();
+    const builder1 = { andWhereRaw: andWhereRaw1 } as any;
+
+    modify1(builder1);
+
+    expect(andWhereRaw1).toHaveBeenCalledTimes(1);
+    expect(andWhereRaw1).toHaveBeenCalledWith(
+      "lower(unaccent(name)) like lower(unaccent(?))",
+      ["%" + $like1.name + "%"]
+    );
+
+    const $like2 = { name: "%[_" };
+
+    const modify2 = parseFilter<PackageProps>({ $like: $like2 });
+
+    const andWhereRaw2 = jest.fn();
+    const builder2 = { andWhereRaw: andWhereRaw2 } as any;
+
+    modify2(builder2);
+
+    expect(andWhereRaw2).toHaveBeenCalledTimes(1);
+    expect(andWhereRaw2).toHaveBeenCalledWith(
+      "lower(unaccent(name)) like lower(unaccent(?))",
+      ["%" + "[%][[][_]" + "%"]
+    );
+  });
+
+  it("sets the $regex filter", () => {
+    expect.assertions(4);
+
+    const $regex1 = { license: /mit/ };
+
+    const modify1 = parseFilter<PackageProps>({ $regex: $regex1 });
+
+    const andWhere1 = jest.fn();
+    const builder1 = { andWhere: andWhere1 } as any;
+
+    modify1(builder1);
+
+    expect(andWhere1).toHaveBeenCalledTimes(1);
+    expect(andWhere1).toHaveBeenCalledWith(
+      "license",
+      "~",
+      $regex1.license.source
+    );
+
+    const $regex2 = { license: /mit/i };
+
+    const modify2 = parseFilter<PackageProps>({ $regex: $regex2 });
+
+    const andWhere2 = jest.fn();
+    const builder2 = { andWhere: andWhere2 } as any;
+
+    modify2(builder2);
+
+    expect(andWhere2).toHaveBeenCalledTimes(1);
+    expect(andWhere2).toHaveBeenLastCalledWith(
+      "license",
+      "~*",
+      $regex2.license.source
+    );
+  });
 });

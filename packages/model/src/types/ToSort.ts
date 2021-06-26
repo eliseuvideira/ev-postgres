@@ -1,4 +1,4 @@
-export type SortProps<T> = {
+export type ToSort<T> = {
   column: keyof T & string;
   order: "asc" | "desc";
 };
