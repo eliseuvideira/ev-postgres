@@ -1,9 +1,5 @@
 import { createFind } from "../../src/functions/createFind";
-
-interface PackageProps {
-  name: string;
-  version: string;
-}
+import { PackageProps } from "../utils/PackageProps";
 
 describe("createFind", () => {
   it("creates a find method", async () => {

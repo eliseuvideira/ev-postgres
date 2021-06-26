@@ -1,4 +1,6 @@
 import { createInsert } from "../../src/functions/createInsert";
+import { PackageProps } from "../utils/PackageProps";
+import { packages } from "../utils/packages";
 
 describe("createInsert", () => {
   it("creates an insert method", async () => {
@@ -6,12 +8,7 @@ describe("createInsert", () => {
 
     const table = "packages";
 
-    const insert = createInsert({ table });
-
-    const packages = [
-      { name: "express", version: "4.17.1" },
-      { name: "koa", version: "2.13.1" },
-    ];
+    const insert = createInsert<PackageProps>({ table });
 
     const returning = jest.fn(() => packages);
     const insertFn = jest.fn(() => ({ returning }));

@@ -21,11 +21,7 @@ const createInsert = jest.fn(() => insert);
 jest.mock("../../src/functions/createInsert", () => ({ createInsert }));
 
 import { createModel } from "../../src/functions/createModel";
-
-interface PackageProps {
-  name: string;
-  version: string;
-}
+import { PackageProps } from "../utils/PackageProps";
 
 describe("createModel", () => {
   it("creates a model", async () => {

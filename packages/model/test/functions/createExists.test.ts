@@ -1,4 +1,5 @@
 import { createExists } from "../../src/functions/createExists";
+import { PackageProps } from "../utils/PackageProps";
 
 describe("createExists", () => {
   it("creates an exists method", async () => {
@@ -6,7 +7,7 @@ describe("createExists", () => {
 
     const count = jest.fn(() => 1);
 
-    const exists = createExists(count as any);
+    const exists = createExists<PackageProps>(count as any);
 
     const database = { id: Math.random() } as any;
     const filter = { id: Math.random() } as any;

@@ -1,9 +1,5 @@
 import { createCount } from "../../src/functions/createCount";
-
-interface PackageProps {
-  name: string;
-  version: string;
-}
+import { PackageProps } from "../utils/PackageProps";
 
 describe("createCount", () => {
   it("creates a count method", async () => {

@@ -1,9 +1,5 @@
 import { parseFilter } from "../../src/functions/parseFilter";
-
-interface PackageProps {
-  name: string;
-  version: string;
-}
+import { PackageProps } from "../utils/PackageProps";
 
 describe("parseFilter", () => {
   it("sets the $eq filter", () => {
