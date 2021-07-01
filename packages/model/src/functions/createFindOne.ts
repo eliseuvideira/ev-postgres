@@ -1,14 +1,11 @@
-import { FindOneProps } from "../types/functions/FindOneProps";
+import { Knex } from "knex";
+import { FilterProps } from "../types/FilterProps";
 import { parseFilter } from "./parseFilter";
 
-interface CreateFindOneProps {
-  table: string;
-}
-
 export const createFindOne =
-  <T>({ table }: CreateFindOneProps) =>
-  async ({ database, filter = {} }: FindOneProps<T>): Promise<T | null> => {
-    const row: any | null = await database
+  <T>(table: string) =>
+  async (database: Knex, filter: FilterProps<T> = {}) => {
+    const row: any = await database
       .from(table)
       .modify(parseFilter(filter))
       .first();

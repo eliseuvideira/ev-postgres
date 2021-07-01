@@ -1,12 +1,7 @@
-import { DeleteOneProps } from "../types/functions/DeleteOneProps";
-
-interface CreateDeleteOneProps<T> {
-  table: string;
-  getPrimaryKey: (instance: Partial<T>) => Partial<T>;
-}
+import { Knex } from "knex";
 
 export const createDeleteOne =
-  <T>({ table, getPrimaryKey }: CreateDeleteOneProps<T>) =>
-  async ({ database, instance }: DeleteOneProps<T>) => {
-    await database.from(table).where(getPrimaryKey(instance)).delete();
+  <T>(table: string, primary: (item: Partial<T>) => Partial<T>) =>
+  async (database: Knex, item: T) => {
+    await database.from(table).where(primary(item)).delete();
   };

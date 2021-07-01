@@ -7,14 +7,14 @@ describe("createInsert", () => {
   it("creates an insert method", async () => {
     expect.assertions(7);
 
-    const insert = createInsert<PackageProps>({ table });
+    const insert = createInsert<PackageProps>(table);
 
     const returning = jest.fn(() => packages);
     const insertFn = jest.fn(() => ({ returning }));
     const from = jest.fn(() => ({ insert: insertFn }));
     const database = { from } as any;
 
-    const insertedItems = await insert({ database }, packages);
+    const insertedItems = await insert(database, packages);
 
     expect(insertedItems).toEqual(packages);
     expect(from).toHaveBeenCalledTimes(1);

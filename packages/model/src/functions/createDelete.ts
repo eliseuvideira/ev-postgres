@@ -1,12 +1,9 @@
-import { DeleteProps } from "../types/functions/DeleteProps";
+import { Knex } from "knex";
+import { FilterProps } from "../types/FilterProps";
 import { parseFilter } from "./parseFilter";
 
-interface CreateDeleteProps {
-  table: string;
-}
-
 export const createDelete =
-  <T>({ table }: CreateDeleteProps) =>
-  async ({ database, filter = {} }: DeleteProps<T>) => {
+  <T>(table: string) =>
+  async (database: Knex, filter: FilterProps<T> = {}) => {
     await database.from(table).modify(parseFilter(filter)).delete();
   };

@@ -1,13 +1,10 @@
-import { FindProps } from "../types/functions/FindProps";
+import { Knex } from "knex";
+import { SortableFilterProps } from "../types/SortableFilterProps";
 import { parseFilter } from "./parseFilter";
 
-interface CreateFindProps {
-  table: string;
-}
-
 export const createFind =
-  <T>({ table }: CreateFindProps) =>
-  async ({ database, filter = {} }: FindProps<T>) => {
+  <T>(table: string) =>
+  async (database: Knex, filter: SortableFilterProps<T> = {}) => {
     const rows: any[] = await database.from(table).modify(parseFilter(filter));
 
     return rows as T[];

@@ -7,7 +7,7 @@ describe("createFindOne", () => {
   it("creates a find one method", async () => {
     expect.assertions(7);
 
-    const findOne = createFindOne<PackageProps>({ table });
+    const findOne = createFindOne<PackageProps>(table);
 
     const item = sample();
 
@@ -24,10 +24,7 @@ describe("createFindOne", () => {
 
     const pkg = sample();
 
-    const value = await findOne({
-      database,
-      filter: { $eq: { name: pkg.name } },
-    });
+    const value = await findOne(database, { $eq: { name: pkg.name } });
 
     expect(value).toEqual(item);
     expect(first).toHaveBeenCalledTimes(1);

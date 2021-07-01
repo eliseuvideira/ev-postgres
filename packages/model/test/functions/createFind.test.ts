@@ -7,7 +7,7 @@ describe("createFind", () => {
   it("creates a find method", async () => {
     expect.assertions(6);
 
-    const find = createFind<PackageProps>({ table });
+    const find = createFind<PackageProps>(table);
 
     const item = sample();
     const items = [item, sample(), sample()];
@@ -28,7 +28,7 @@ describe("createFind", () => {
     const database = { from } as any;
     const filter = { $eq: { name: item.name } } as any;
 
-    const values = await find({ database, filter });
+    const values = await find(database, filter);
 
     expect(values).toEqual(items);
     expect(modify).toHaveBeenCalledTimes(1);

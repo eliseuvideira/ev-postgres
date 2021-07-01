@@ -1,13 +1,10 @@
-import { CountProps } from "../types/functions/CountProps";
+import { Knex } from "knex";
+import { FilterProps } from "../types/FilterProps";
 import { parseFilter } from "./parseFilter";
 
-interface CreateCountProps {
-  table: string;
-}
-
 export const createCount =
-  <T>({ table }: CreateCountProps) =>
-  async ({ database, filter = {} }: CountProps<T>) => {
+  <T>(table: string) =>
+  async (database: Knex, filter: FilterProps<T> = {}) => {
     const { count } = await database
       .from(table)
       .modify(parseFilter(filter))

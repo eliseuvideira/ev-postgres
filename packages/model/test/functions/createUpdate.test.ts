@@ -7,7 +7,7 @@ describe("createUpdate", () => {
   it("creates an update method", async () => {
     expect.assertions(10);
 
-    const update = createUpdate<PackageProps>({ table });
+    const update = createUpdate<PackageProps>(table);
 
     const license = "MIT";
     const version = "0.0.0";
@@ -27,10 +27,7 @@ describe("createUpdate", () => {
     const from = jest.fn(() => ({ modify }));
     const database = { from } as any;
 
-    const values = await update(
-      { database, filter: { $eq: { license } } },
-      { version }
-    );
+    const values = await update(database, { $eq: { license } }, { version });
 
     expect(values).toEqual(items);
     expect(from).toHaveBeenCalledTimes(1);

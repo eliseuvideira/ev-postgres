@@ -46,30 +46,13 @@ import { table } from "../utils/table";
 
 describe("createModel", () => {
   it("creates a model", async () => {
-    expect.assertions(42);
+    expect.assertions(41);
 
-    const fields = [
-      "name",
-      "version",
-      "license",
-      "homepage",
-      "description",
-      "downloads",
-      "created_at",
-      "updated_at",
-      "repository",
-    ] as (keyof PackageProps)[];
+    const primary = ({ name }: Partial<PackageProps>) => ({ name });
 
-    const getPrimaryKey = ({ name }: Partial<PackageProps>) => ({ name });
-
-    const model = createModel<PackageProps>({
-      table,
-      fields,
-      getPrimaryKey,
-    });
+    const model = createModel<PackageProps>(table, primary);
 
     expect(model.table).toBe(table);
-    expect(model.fields).toBe(fields);
     expect(model.find).toBeDefined();
     expect(model.find).toEqual(find);
     expect(model.findOne).toBeDefined();
@@ -81,25 +64,25 @@ describe("createModel", () => {
     expect(model.insert).toBeDefined();
     expect(model.insert).toEqual(insert);
     expect(createCount).toHaveBeenCalledTimes(1);
-    expect(createCount).toHaveBeenCalledWith({ table });
+    expect(createCount).toHaveBeenCalledWith(table);
     expect(createExists).toHaveBeenCalledTimes(1);
     expect(createExists).toHaveBeenCalledWith(count);
     expect(createFind).toHaveBeenCalledTimes(1);
-    expect(createFind).toHaveBeenCalledWith({ table });
+    expect(createFind).toHaveBeenCalledWith(table);
     expect(createFindOne).toHaveBeenCalledTimes(1);
-    expect(createFindOne).toHaveBeenCalledWith({ table });
+    expect(createFindOne).toHaveBeenCalledWith(table);
     expect(createInsert).toHaveBeenCalledTimes(1);
-    expect(createInsert).toHaveBeenCalledWith({ table });
+    expect(createInsert).toHaveBeenCalledWith(table);
     expect(createInsertOne).toHaveBeenCalledTimes(1);
-    expect(createInsertOne).toHaveBeenCalledWith({ table });
+    expect(createInsertOne).toHaveBeenCalledWith(table);
     expect(createUpdate).toHaveBeenCalledTimes(1);
-    expect(createUpdate).toHaveBeenCalledWith({ table });
+    expect(createUpdate).toHaveBeenCalledWith(table);
     expect(createUpdateOne).toHaveBeenCalledTimes(1);
-    expect(createUpdateOne).toHaveBeenCalledWith({ table, getPrimaryKey });
+    expect(createUpdateOne).toHaveBeenCalledWith(table, primary);
     expect(createDelete).toHaveBeenCalledTimes(1);
-    expect(createDelete).toHaveBeenCalledWith({ table });
+    expect(createDelete).toHaveBeenCalledWith(table);
     expect(createDeleteOne).toHaveBeenCalledTimes(1);
-    expect(createDeleteOne).toHaveBeenCalledWith({ table, getPrimaryKey });
+    expect(createDeleteOne).toHaveBeenCalledWith(table, primary);
     expect(count).not.toHaveBeenCalled();
     expect(exists).not.toHaveBeenCalled();
     expect(find).not.toHaveBeenCalled();

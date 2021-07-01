@@ -7,7 +7,7 @@ describe("createInsertOne", () => {
   it("creates an insert one method", async () => {
     expect.assertions(7);
 
-    const insertOne = createInsertOne<PackageProps>({ table });
+    const insertOne = createInsertOne<PackageProps>(table);
 
     const item = sample();
 
@@ -16,7 +16,7 @@ describe("createInsertOne", () => {
     const from = jest.fn(() => ({ insert }));
     const database = { from } as any;
 
-    const insertedItem = await insertOne({ database }, item);
+    const insertedItem = await insertOne(database, item);
 
     expect(insertedItem).toEqual(item);
     expect(from).toHaveBeenCalledTimes(1);

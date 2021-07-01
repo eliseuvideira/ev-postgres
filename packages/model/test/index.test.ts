@@ -7,7 +7,6 @@ import { database } from "./utils/database";
 import { table } from "./utils/table";
 import { packages } from "./utils/packages";
 import { PackageProps } from "./utils/PackageProps";
-import { fields } from "./utils/fields";
 import { sample } from "./utils/sample";
 
 beforeAll(async () => {
@@ -44,11 +43,7 @@ afterEach(async () => {
 
 describe("createModel", () => {
   const __model = () =>
-    createModel<PackageProps>({
-      table,
-      fields,
-      getPrimaryKey: ({ name }) => ({ name }),
-    });
+    createModel<PackageProps>(table, ({ name }) => ({ name }));
 
   const descending = (a: PackageProps, b: PackageProps) =>
     a.name > b.name ? -1 : +1;
@@ -90,20 +85,12 @@ describe("createModel", () => {
     expect(model.table).toBe(table);
   });
 
-  it("has the table fields", () => {
-    expect.assertions(1);
-
-    const model = __model();
-
-    expect(model.fields).toEqual(fields);
-  });
-
   it("finds all rows", async () => {
     expect.assertions(3);
 
     const model = __model();
 
-    const rows = await model.find({ database: database });
+    const rows = await model.find(database);
 
     expect(rows.length).toBeGreaterThan(0);
     expect(rows.length).toBe(packages.length);
@@ -117,10 +104,7 @@ describe("createModel", () => {
 
     const item = sample();
 
-    const rows = await model.find({
-      database: database,
-      filter: { $eq: { name: item.name } },
-    });
+    const rows = await model.find(database, { $eq: { name: item.name } });
 
     expect(rows.length).toBe(1);
     expect(rows).toEqual(packages.filter((pkg) => pkg.name === item.name));
@@ -131,9 +115,8 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const rows = await model.find({
-      database: database,
-      filter: { $sort: [{ column: "name", order: "desc" }] },
+    const rows = await model.find(database, {
+      $sort: [{ column: "name", order: "desc" }],
     });
 
     expect(rows.length).toBe(packages.length);
@@ -145,10 +128,7 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const rows = await model.find({
-      database: database,
-      filter: { $limit: 1 },
-    });
+    const rows = await model.find(database, { $limit: 1 });
 
     expect(rows.length).toBe(1);
 
@@ -162,13 +142,10 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const rows = await model.find({
-      database: database,
-      filter: {
-        $limit: 1,
-        $offset: 1,
-        $sort: [{ column: "name", order: "asc" }],
-      },
+    const rows = await model.find(database, {
+      $limit: 1,
+      $offset: 1,
+      $sort: [{ column: "name", order: "asc" }],
     });
 
     expect(rows.length).toBe(1);
@@ -180,7 +157,7 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const pkg = await model.findOne({ database: database });
+    const pkg = await model.findOne(database);
 
     if (!pkg) {
       fail();
@@ -200,10 +177,7 @@ describe("createModel", () => {
 
     const name = sample().name;
 
-    const pkg = await model.findOne({
-      database: database,
-      filter: { $eq: { name } },
-    });
+    const pkg = await model.findOne(database, { $eq: { name } });
 
     expect(pkg).toBeDefined();
     expect(pkg).toEqual(packages.find((pkg) => pkg.name === name));
@@ -216,10 +190,7 @@ describe("createModel", () => {
 
     const name = "invalid";
 
-    const pkg = await model.findOne({
-      database: database,
-      filter: { $eq: { name } },
-    });
+    const pkg = await model.findOne(database, { $eq: { name } });
 
     expect(pkg).not.toBeTruthy();
     expect(pkg).toBe(null);
@@ -230,7 +201,7 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const totalCount = await model.count({ database: database });
+    const totalCount = await model.count(database);
 
     expect(totalCount).toBe(packages.length);
   });
@@ -242,16 +213,14 @@ describe("createModel", () => {
 
     const item = sample();
 
-    const totalCount1 = await model.count({
-      database: database,
-      filter: { $eq: { name: item.name } },
+    const totalCount1 = await model.count(database, {
+      $eq: { name: item.name },
     });
 
     expect(totalCount1).toBe(1);
 
-    const totalCount2 = await model.count({
-      database: database,
-      filter: { $eq: { name: "invalid" } },
+    const totalCount2 = await model.count(database, {
+      $eq: { name: "invalid" },
     });
 
     expect(totalCount2).toBe(0);
@@ -262,16 +231,13 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const exists1 = await model.exists({ database: database });
+    const exists1 = await model.exists(database);
 
     expect(exists1).toBe(true);
 
     const item = sample();
 
-    const exists2 = await model.exists({
-      database: database,
-      filter: { $eq: { name: item.name } },
-    });
+    const exists2 = await model.exists(database, { $eq: { name: item.name } });
 
     expect(exists2).toBe(true);
   });
@@ -281,10 +247,7 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const exists = await model.exists({
-      database: database,
-      filter: { $eq: { downloads: -1 } },
-    });
+    const exists = await model.exists(database, { $eq: { downloads: -1 } });
 
     expect(exists).toBe(false);
   });
@@ -296,7 +259,7 @@ describe("createModel", () => {
 
     const pkgs = extraPackages;
 
-    const rows = await model.insert({ database: database }, pkgs);
+    const rows = await model.insert(database, pkgs);
 
     expect(rows.length).toBe(pkgs.length);
     expect(rows).toEqual(pkgs);
@@ -313,7 +276,7 @@ describe("createModel", () => {
 
     item.name += Math.random();
 
-    const inserted = await model.insertOne({ database }, item);
+    const inserted = await model.insertOne(database, item);
 
     expect(inserted).toEqual(item);
 
@@ -330,7 +293,8 @@ describe("createModel", () => {
     });
 
     const values = await model.update(
-      { database },
+      database,
+      {},
       { repository: "npm package" }
     );
 
@@ -350,7 +314,8 @@ describe("createModel", () => {
     });
 
     const values = await model.update(
-      { database, filter: { $eq: { license: "MIT" } } },
+      database,
+      { $eq: { license: "MIT" } },
       { version: "0.0.0" }
     );
 
@@ -367,10 +332,7 @@ describe("createModel", () => {
 
     item.downloads = 0;
 
-    const value = await model.updateOne(
-      { database, instance: item },
-      { downloads: 0 }
-    );
+    const value = await model.updateOne(database, item, { downloads: 0 });
 
     expect(value).toEqual(item);
   });
@@ -381,7 +343,8 @@ describe("createModel", () => {
     const model = __model();
 
     const value = await model.updateOne(
-      { database, instance: { name: "any" } },
+      database,
+      { name: "any" },
       { downloads: 1 }
     );
 
@@ -393,16 +356,16 @@ describe("createModel", () => {
 
     const model = __model();
 
-    await model.delete({ database });
+    await model.delete(database);
 
-    const items = await model.find({ database });
+    const items = await model.find(database);
 
     expect(items.length).toBe(0);
     expect(items).toEqual([]);
 
-    await model.insert({ database }, packages);
+    await model.insert(database, packages);
 
-    const newItems = await model.find({ database });
+    const newItems = await model.find(database);
 
     expect(newItems.length).toBe(packages.length);
     expect(newItems.sort(ascending)).toEqual(packages.sort(ascending));
@@ -415,9 +378,9 @@ describe("createModel", () => {
 
     const license = "MIT";
 
-    await model.delete({ database, filter: { $eq: { license } } });
+    await model.delete(database, { $eq: { license } });
 
-    const items = await model.find({ database });
+    const items = await model.find(database);
 
     expect(items.length).toBeGreaterThan(0);
     expect(items.sort(ascending)).toEqual(
@@ -425,11 +388,11 @@ describe("createModel", () => {
     );
 
     await model.insert(
-      { database },
+      database,
       packages.filter((x) => x.license === license)
     );
 
-    const newItems = await model.find({ database });
+    const newItems = await model.find(database);
 
     expect(newItems.length).toBe(packages.length);
     expect(newItems.sort(ascending)).toEqual(packages.sort(ascending));
@@ -442,16 +405,16 @@ describe("createModel", () => {
 
     const item = sample();
 
-    await model.deleteOne({ database, instance: item });
+    await model.deleteOne(database, item);
 
-    const items = await model.find({ database });
+    const items = await model.find(database);
 
     expect(items.length).toBe(packages.length - 1);
     expect(items.sort(ascending)).toEqual(
       packages.filter((x) => x !== item).sort(ascending)
     );
 
-    await model.insertOne({ database }, item);
+    await model.insertOne(database, item);
   });
 
   it("finds using filter $in", async () => {
@@ -463,10 +426,7 @@ describe("createModel", () => {
 
     const items = packages.filter((pkg) => names.includes(pkg.name));
 
-    const values = await model.find({
-      database,
-      filter: { $in: { name: names } },
-    });
+    const values = await model.find(database, { $in: { name: names } });
 
     expect(values.length).toBe(items.length);
     expect(values.sort(ascending)).toEqual(items.sort(ascending));
@@ -479,10 +439,7 @@ describe("createModel", () => {
     const model = __model();
 
     const regex1 = /Apache/;
-    const items1 = await model.find({
-      database,
-      filter: { $regex: { license: regex1 } },
-    });
+    const items1 = await model.find(database, { $regex: { license: regex1 } });
 
     expect(items1.length).toBeGreaterThan(0);
     expect(items1.sort(ascending)).toEqual(
@@ -490,10 +447,7 @@ describe("createModel", () => {
     );
 
     const regex2 = /mit/i;
-    const items2 = await model.find({
-      database,
-      filter: { $regex: { license: regex2 } },
-    });
+    const items2 = await model.find(database, { $regex: { license: regex2 } });
 
     expect(items2.length).toBeGreaterThan(0);
     expect(items2.sort(ascending)).toEqual(
@@ -508,9 +462,8 @@ describe("createModel", () => {
 
     const items = packages.filter((x) => /framework/.test(x.description));
 
-    const values = await model.find({
-      database,
-      filter: { $like: { description: "framework" } },
+    const values = await model.find(database, {
+      $like: { description: "framework" },
     });
 
     expect(values.length).toBeGreaterThan(0);
