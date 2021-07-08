@@ -252,6 +252,21 @@ describe("createModel", () => {
     expect(exists).toBe(false);
   });
 
+  it("inserts empty array by doing nothing and returning empty array", async () => {
+    expect.assertions(4);
+
+    const model = __model();
+
+    const pkgs: any[] = [];
+
+    const rows = await model.insert(database, pkgs);
+
+    expect(rows).not.toBe(pkgs);
+    expect(rows).toEqual([]);
+    expect(rows.length).toBe(0);
+    expect(rows).toEqual(pkgs);
+  });
+
   it("inserts rows", async () => {
     expect.assertions(2);
 
