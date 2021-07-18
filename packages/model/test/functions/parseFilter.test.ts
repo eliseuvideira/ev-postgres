@@ -169,4 +169,38 @@ describe("parseFilter", () => {
       $regex2.license.source
     );
   });
+
+  it("sets the $null filter", () => {
+    expect.assertions(2);
+
+    const $null = ["homepage"] as (keyof PackageProps)[];
+
+    const modify = parseFilter<PackageProps>({ $null });
+
+    const whereNull = jest.fn();
+
+    const builder = { whereNull } as any;
+
+    modify(builder);
+
+    expect(whereNull).toHaveBeenCalledTimes(1);
+    expect(whereNull).toHaveBeenLastCalledWith("homepage");
+  });
+
+  it("sets the $notnull filter", () => {
+    expect.assertions(2);
+
+    const $notnull = ["homepage"] as (keyof PackageProps)[];
+
+    const modify = parseFilter<PackageProps>({ $notnull });
+
+    const whereNotNull = jest.fn();
+
+    const builder = { whereNotNull } as any;
+
+    modify(builder);
+
+    expect(whereNotNull).toHaveBeenCalledTimes(1);
+    expect(whereNotNull).toHaveBeenLastCalledWith("homepage");
+  });
 });

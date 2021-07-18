@@ -76,7 +76,7 @@ export const packages: PackageProps[] = [
     description: "Koa web app framework",
     created_at: "2013-11-06T20:11:50.797Z",
     updated_at: "2021-01-04T15:12:14.822Z",
-    homepage: "https://github.com/koajs/koa#readme",
+    homepage: null,
     repository: "git+https://github.com/koajs/koa.git",
     downloads: 990964,
   },

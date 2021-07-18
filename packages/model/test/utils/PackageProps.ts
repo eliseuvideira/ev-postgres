@@ -5,7 +5,7 @@ export interface PackageProps {
   description: string;
   created_at: string;
   updated_at: string;
-  homepage: string;
+  homepage: string | null;
   repository: string;
   downloads: number;
 }

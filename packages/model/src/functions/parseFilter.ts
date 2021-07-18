@@ -36,6 +36,18 @@ export const parseFilter =
         );
       }
     }
+    if (filter.$null) {
+      const keys = filter.$null;
+      for (const key of keys) {
+        builder.whereNull(key);
+      }
+    }
+    if (filter.$notnull) {
+      const keys = filter.$notnull;
+      for (const key of keys) {
+        builder.whereNotNull(key);
+      }
+    }
     if (filter.$limit) {
       builder.limit(filter.$limit);
     }

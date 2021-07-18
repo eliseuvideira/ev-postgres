@@ -10,4 +10,6 @@ export interface FilterProps<T> {
   $like?: Partial<T>;
   $in?: ToArray<Partial<T>>;
   $regex?: ToRegex<Partial<T>>;
+  $null?: (keyof T)[];
+  $notnull?: (keyof T)[];
 }

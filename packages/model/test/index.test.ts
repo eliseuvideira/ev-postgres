@@ -22,7 +22,7 @@ beforeAll(async () => {
     table.text("description").notNullable();
     table.text("created_at").notNullable();
     table.text("updated_at").notNullable();
-    table.text("homepage").notNullable();
+    table.text("homepage");
     table.text("repository").notNullable();
     table.integer("downloads").notNullable();
   });
@@ -498,6 +498,38 @@ describe("createModel", () => {
     expect(items2.length).toBeGreaterThan(0);
     expect(items2.sort(ascending)).toEqual(
       packages.filter((pkg) => regex2.test(pkg.license)).sort(ascending)
+    );
+  });
+
+  it("finds using filter $null", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const items = await model.find({
+      database,
+      filter: { $null: ["homepage"] },
+    });
+
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.sort(ascending)).toEqual(
+      packages.filter((pkg) => pkg.homepage == null).sort(ascending)
+    );
+  });
+
+  it("finds using filter $notnull", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const items = await model.find({
+      database,
+      filter: { $notnull: ["homepage"] },
+    });
+
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.sort(ascending)).toEqual(
+      packages.filter((pkg) => pkg.homepage != null).sort(ascending)
     );
   });
 
