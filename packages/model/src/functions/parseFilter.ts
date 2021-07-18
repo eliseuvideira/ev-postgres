@@ -1,9 +1,9 @@
 import { Knex } from "knex";
-import { FilterProps } from "../types/FilterProps";
+import { SortableFilterProps } from "../types/SortableFilterProps";
 import { escapeLike } from "./escapeLike";
 
 export const parseFilter =
-  <T>(filter: FilterProps<T>) =>
+  <T>(filter: SortableFilterProps<T>) =>
   (builder: Knex.QueryBuilder): void => {
     if (filter.$eq) {
       const keys = Object.keys(filter.$eq) as (keyof T)[];

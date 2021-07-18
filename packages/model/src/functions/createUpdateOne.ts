@@ -1,19 +1,15 @@
-import { UpdateOneProps } from "../types/functions/UpdateOneProps";
-
-interface CreateUpdateOneProps<T> {
-  table: string;
-  getPrimaryKey: (instance: Partial<T>) => Partial<T>;
-}
+import { Knex } from "knex";
 
 export const createUpdateOne =
-  <T>({ table, getPrimaryKey }: CreateUpdateOneProps<T>) =>
+  <T>(table: string, primary: (item: Partial<T>) => Partial<T>) =>
   async (
-    { database, instance }: UpdateOneProps<T>,
+    database: Knex,
+    item: Partial<T>,
     values: Partial<T>
   ): Promise<T | null> => {
     const [row]: any[] = await database
       .from(table)
-      .where(getPrimaryKey(instance))
+      .where(primary(item))
       .update(values)
       .returning("*");
 

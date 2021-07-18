@@ -9,7 +9,7 @@ describe("createCount", () => {
 
     const pkg = sample();
 
-    const count = createCount<PackageProps>({ table });
+    const count = createCount<PackageProps>(table);
 
     const totalCount = Math.floor(Math.random() * 9999) + 1;
 
@@ -28,10 +28,7 @@ describe("createCount", () => {
 
     const database = { from } as any;
 
-    const value = await count({
-      database,
-      filter: { $eq: { name: pkg.name } },
-    });
+    const value = await count(database, { $eq: { name: pkg.name } });
 
     expect(value).toBe(totalCount);
     expect(first).toHaveBeenCalledTimes(1);

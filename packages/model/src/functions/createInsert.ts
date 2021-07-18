@@ -1,12 +1,12 @@
-import { InsertProps } from "../types/functions/InsertProps";
-
-interface CreateInsertProps {
-  table: string;
-}
+import { Knex } from "knex";
 
 export const createInsert =
-  <T>({ table }: CreateInsertProps) =>
-  async ({ database }: InsertProps, items: T[]) => {
+  <T>(table: string) =>
+  async (database: Knex, items: T[]) => {
+    if (items.length === 0) {
+      return [];
+    }
+
     const rows = await database.from(table).insert(items).returning("*");
 
     return rows as T[];

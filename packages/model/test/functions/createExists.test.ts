@@ -14,11 +14,11 @@ describe("createExists", () => {
     const database = { id: Math.random() } as any;
     const filter = { id: Math.random() } as any;
 
-    const value = await exists({ database, filter });
+    const value = await exists(database, filter);
 
     expect(value).toBe(number > 0);
     expect(count).toHaveBeenCalled();
     expect(count).toHaveBeenCalledTimes(1);
-    expect(count.mock.calls[0]).toEqual([{ database, filter }]);
+    expect(count.mock.calls[0]).toEqual([database, filter]);
   });
 });
