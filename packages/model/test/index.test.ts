@@ -475,10 +475,7 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const items = await model.find({
-      database,
-      filter: { $null: ["homepage"] },
-    });
+    const items = await model.find(database, { $null: ["homepage"] });
 
     expect(items.length).toBeGreaterThan(0);
     expect(items.sort(ascending)).toEqual(
@@ -491,10 +488,7 @@ describe("createModel", () => {
 
     const model = __model();
 
-    const items = await model.find({
-      database,
-      filter: { $notnull: ["homepage"] },
-    });
+    const items = await model.find(database, { $notnull: ["homepage"] });
 
     expect(items.length).toBeGreaterThan(0);
     expect(items.sort(ascending)).toEqual(
