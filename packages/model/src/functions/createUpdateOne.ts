@@ -1,15 +1,18 @@
 import { Knex } from "knex";
 
 export const createUpdateOne =
-  <T>(table: string, primary: (item: Partial<T>) => Partial<T>) =>
+  <T, Primary extends Partial<T>>(
+    table: string,
+    _primary: (item: Primary) => Primary
+  ) =>
   async (
     database: Knex,
-    item: Partial<T>,
+    primary: Primary,
     values: Partial<T>
   ): Promise<T | null> => {
     const [row]: any[] = await database
       .from(table)
-      .where(primary(item))
+      .where(_primary(primary))
       .update(values)
       .returning("*");
 

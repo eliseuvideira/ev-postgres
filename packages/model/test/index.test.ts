@@ -8,6 +8,7 @@ import { table } from "./utils/table";
 import { packages } from "./utils/packages";
 import { PackageProps } from "./utils/PackageProps";
 import { sample } from "./utils/sample";
+import { PackagePropsPrimary } from "./utils/PackagePropsPrimary";
 
 beforeAll(async () => {
   await database.raw(`select 1 as db_status`);
@@ -43,7 +44,9 @@ afterEach(async () => {
 
 describe("createModel", () => {
   const __model = () =>
-    createModel<PackageProps>(table, ({ name }) => ({ name }));
+    createModel<PackageProps, PackagePropsPrimary>(table, ({ name }) => ({
+      name,
+    }));
 
   const descending = (a: PackageProps, b: PackageProps) =>
     a.name > b.name ? -1 : +1;

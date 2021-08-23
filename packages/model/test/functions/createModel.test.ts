@@ -42,15 +42,21 @@ jest.mock("../../src/functions/createDeleteOne", () => ({ createDeleteOne }));
 
 import { createModel } from "../../src/functions/createModel";
 import { PackageProps } from "../utils/PackageProps";
+import { PackagePropsPrimary } from "../utils/PackagePropsPrimary";
 import { table } from "../utils/table";
 
 describe("createModel", () => {
   it("creates a model", async () => {
     expect.assertions(41);
 
-    const primary = ({ name }: Partial<PackageProps>) => ({ name });
+    const primary = ({ name }: PackagePropsPrimary): PackagePropsPrimary => ({
+      name,
+    });
 
-    const model = createModel<PackageProps>(table, primary);
+    const model = createModel<PackageProps, PackagePropsPrimary>(
+      table,
+      primary
+    );
 
     expect(model.table).toBe(table);
     expect(model.find).toBeDefined();

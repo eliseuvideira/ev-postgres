@@ -9,9 +9,9 @@ import { createInsertOne } from "./createInsertOne";
 import { createUpdate } from "./createUpdate";
 import { createUpdateOne } from "./createUpdateOne";
 
-export const createModel = <T>(
+export const createModel = <T, Primary extends Partial<T>>(
   table: string,
-  primary: (item: Partial<T>) => Partial<T>
+  primary: (item: Primary) => Primary
 ) => {
   const find = createFind<T>(table);
   const findOne = createFindOne<T>(table);
@@ -20,9 +20,9 @@ export const createModel = <T>(
   const insert = createInsert<T>(table);
   const insertOne = createInsertOne<T>(table);
   const update = createUpdate<T>(table);
-  const updateOne = createUpdateOne<T>(table, primary);
+  const updateOne = createUpdateOne<T, Primary>(table, primary);
   const _delete = createDelete<T>(table);
-  const deleteOne = createDeleteOne<T>(table, primary);
+  const deleteOne = createDeleteOne<T, Primary>(table, primary);
 
   return {
     table,
