@@ -3,6 +3,7 @@ import { createDelete } from "./createDelete";
 import { createDeleteOne } from "./createDeleteOne";
 import { createExists } from "./createExists";
 import { createFind } from "./createFind";
+import { createFindById } from "./createFindById";
 import { createFindOne } from "./createFindOne";
 import { createInsert } from "./createInsert";
 import { createInsertOne } from "./createInsertOne";
@@ -14,6 +15,7 @@ export const createModel = <T, Primary extends Partial<T>>(
   primary: (item: Primary) => Primary
 ) => {
   const find = createFind<T>(table);
+  const findById = createFindById<T, Primary>(table, primary);
   const findOne = createFindOne<T>(table);
   const count = createCount<T>(table);
   const exists = createExists<T>(count);
@@ -27,6 +29,7 @@ export const createModel = <T, Primary extends Partial<T>>(
   return {
     table,
     find,
+    findById,
     findOne,
     count,
     exists,

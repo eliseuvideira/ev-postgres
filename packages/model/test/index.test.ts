@@ -155,6 +155,36 @@ describe("createModel", () => {
     expect(rows).toEqual(packages.sort(ascending).slice(1, 2));
   });
 
+  it("finds by id", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const name = sample().name;
+
+    const pkg = await model.findById(database, { name });
+
+    if (!pkg) {
+      fail();
+    }
+
+    expect(pkg).toBeDefined();
+    expect(pkg).toEqual(packages.find((pkg) => pkg.name === name));
+  });
+
+  it("finds by id if none found returns null", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const name = "invalid";
+
+    const pkg = await model.findById(database, { name });
+
+    expect(pkg).not.toBeTruthy();
+    expect(pkg).toBe(null);
+  });
+
   it("finds one", async () => {
     expect.assertions(2);
 

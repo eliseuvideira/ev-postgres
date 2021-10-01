@@ -12,6 +12,10 @@ const find = jest.fn();
 const createFind = jest.fn(() => find);
 jest.mock("../../src/functions/createFind", () => ({ createFind }));
 
+const findById = jest.fn();
+const createFindById = jest.fn(() => findById);
+jest.mock("../../src/functions/createFindById", () => ({ createFindById }));
+
 const findOne = jest.fn();
 const createFindOne = jest.fn(() => findOne);
 jest.mock("../../src/functions/createFindOne", () => ({ createFindOne }));
@@ -47,7 +51,7 @@ import { table } from "../utils/table";
 
 describe("createModel", () => {
   it("creates a model", async () => {
-    expect.assertions(41);
+    expect.assertions(43);
 
     const primary = ({ name }: PackagePropsPrimary): PackagePropsPrimary => ({
       name,
@@ -75,6 +79,8 @@ describe("createModel", () => {
     expect(createExists).toHaveBeenCalledWith(count);
     expect(createFind).toHaveBeenCalledTimes(1);
     expect(createFind).toHaveBeenCalledWith(table);
+    expect(createFindById).toHaveBeenCalledTimes(1);
+    expect(createFindById).toHaveBeenCalledWith(table, primary);
     expect(createFindOne).toHaveBeenCalledTimes(1);
     expect(createFindOne).toHaveBeenCalledWith(table);
     expect(createInsert).toHaveBeenCalledTimes(1);
