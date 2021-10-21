@@ -1,19 +1,34 @@
-import { createCount } from "./createCount";
-import { createDelete } from "./createDelete";
-import { createDeleteOne } from "./createDeleteOne";
-import { createExists } from "./createExists";
-import { createFind } from "./createFind";
-import { createFindById } from "./createFindById";
-import { createFindOne } from "./createFindOne";
-import { createInsert } from "./createInsert";
-import { createInsertOne } from "./createInsertOne";
-import { createUpdate } from "./createUpdate";
-import { createUpdateOne } from "./createUpdateOne";
+import { Count, createCount } from "./createCount";
+import { createDelete, Delete } from "./createDelete";
+import { createDeleteOne, DeleteOne } from "./createDeleteOne";
+import { createExists, Exists } from "./createExists";
+import { createFind, Find } from "./createFind";
+import { createFindById, FindById } from "./createFindById";
+import { createFindOne, FindOne } from "./createFindOne";
+import { createInsert, Insert } from "./createInsert";
+import { createInsertOne, InsertOne } from "./createInsertOne";
+import { createUpdate, Update } from "./createUpdate";
+import { createUpdateOne, UpdateOne } from "./createUpdateOne";
+
+export interface ModelProps<T, Primary extends Partial<T>> {
+  table: string;
+  find: Find<T>;
+  findById: FindById<T, Primary>;
+  findOne: FindOne<T>;
+  count: Count<T>;
+  exists: Exists<T>;
+  insert: Insert<T>;
+  insertOne: InsertOne<T>;
+  update: Update<T>;
+  updateOne: UpdateOne<T, Primary>;
+  delete: Delete<T>;
+  deleteOne: DeleteOne<T, Primary>;
+}
 
 export const createModel = <T, Primary extends Partial<T>>(
   table: string,
   primary: (item: Primary) => Primary
-) => {
+): ModelProps<T, Primary> => {
   const find = createFind<T>(table);
   const findById = createFindById<T, Primary>(table, primary);
   const findOne = createFindOne<T>(table);
