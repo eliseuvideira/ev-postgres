@@ -11,6 +11,11 @@
     dotenv "^10.0.0"
     dotenv-safe "^8.2.0"
 
+"@ev-postgres/model@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@ev-postgres/model/-/model-0.6.1.tgz#d642d6249cd9ddcc051c342eb905d928206bd8f2"
+  integrity sha512-10ZUYZrzOe52OKAv4AdjuAuo//Hf8/zq6tqzPEB5TpZNjBdApvJISd51601f8nM/3M5ldL0v5di9rUR3hx1e+A==
+
 "@types/dotenv-safe@^8.1.1":
   version "8.1.2"
   resolved "https://registry.yarnpkg.com/@types/dotenv-safe/-/dotenv-safe-8.1.2.tgz#72f126969f445af5654efd3167deabc2cbc6c24e"
