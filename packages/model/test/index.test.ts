@@ -2,7 +2,7 @@ import { dotenv } from "@ev-fns/dotenv";
 
 dotenv();
 
-import { createModel, withExtensionsCreateModel } from "../src/index";
+import { createModel } from "../src/index";
 import { database } from "./utils/database";
 import { table } from "./utils/table";
 import { packages } from "./utils/packages";
@@ -543,22 +543,5 @@ describe("createModel", () => {
     expect(values.length).toBeGreaterThan(0);
     expect(values.length).toEqual(items.length);
     expect(values.sort(ascending)).toEqual(items.sort(ascending));
-  });
-});
-
-describe("withExtensionsCreateModel", () => {
-  it("creates a createModel with extensions", () => {
-    expect.assertions(1);
-
-    const extension = jest.fn();
-
-    const createModel = withExtensionsCreateModel({ extension });
-
-    const Model = createModel<PackageProps, PackagePropsPrimary>(
-      "package",
-      ({ name }) => ({ name })
-    );
-
-    expect(Model.extension).toBe(extension);
   });
 });
