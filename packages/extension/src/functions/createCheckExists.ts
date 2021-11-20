@@ -1,27 +1,19 @@
 import { ModelProps } from "@ev-postgres/model/lib/functions/createModel";
 import { Knex } from "knex";
-import { parseObject } from "./parseObject";
 
-export interface CreateCheckExistsOrThrowErrorProps<T, TPrimary> {
-  model: string;
-  Model: ModelProps<T, TPrimary>;
-  InputError: typeof Error;
-  formatError: (props: { model: string; identifier: string }) => string;
-}
+export type CheckExists<T> = (database: Knex, item: Partial<T>) => Promise<T>;
 
-export const createCheckExistsOrThrowError =
-  <T, TPrimary>({
-    model,
-    Model,
-    InputError,
-    formatError,
-  }: CreateCheckExistsOrThrowErrorProps<T, TPrimary>) =>
-  async (database: Knex, item: Partial<T>) => {
-    const exists = await Model.exists(database, { $eq: { ...item } });
+export const createCheckExists =
+  <T, TPrimary>(
+    Model: ModelProps<T, TPrimary>,
+    checkExistsError: (item: Partial<T>) => never
+  ): CheckExists<T> =>
+  async (database, item) => {
+    const existingItem = await Model.findOne(database, { $eq: { ...item } });
 
-    if (!exists) {
-      const identifier = parseObject({ ...item });
-
-      throw new InputError(formatError({ model, identifier }));
+    if (!existingItem) {
+      checkExistsError(item);
     }
+
+    return existingItem;
   };
