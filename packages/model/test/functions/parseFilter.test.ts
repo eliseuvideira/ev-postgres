@@ -115,7 +115,7 @@ describe("parseFilter", () => {
     modify1(builder1);
 
     expect(andWhereRaw1).toHaveBeenCalledTimes(1);
-    expect(andWhereRaw1).toHaveBeenCalledWith("lower(name) like lower(?)", [
+    expect(andWhereRaw1).toHaveBeenCalledWith('lower("name") like lower(?)', [
       "%" + $like1.name + "%",
     ]);
 
@@ -129,7 +129,7 @@ describe("parseFilter", () => {
     modify2(builder2);
 
     expect(andWhereRaw2).toHaveBeenCalledTimes(1);
-    expect(andWhereRaw2).toHaveBeenCalledWith("lower(name) like lower(?)", [
+    expect(andWhereRaw2).toHaveBeenCalledWith('lower("name") like lower(?)', [
       "%" + "[%][[][_]" + "%",
     ]);
   });
