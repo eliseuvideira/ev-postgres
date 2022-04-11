@@ -26,7 +26,7 @@ describe("createUpdateOne", () => {
 
     const updated = await updateOne({
       database,
-      primary: item,
+      id: item,
       values: { version },
     });
 

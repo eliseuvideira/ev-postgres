@@ -17,14 +17,14 @@ describe("createDeleteOne", () => {
     const from = jest.fn(() => ({ where }));
     const database = { from } as any;
 
-    const primary = { name: Math.random().toString() } as PackagePropsPrimary;
+    const id = { name: Math.random().toString() } as PackagePropsPrimary;
 
-    await deleteOne({ database, primary });
+    await deleteOne({ database, id });
 
     expect(from).toHaveBeenCalledTimes(1);
     expect(from).toHaveBeenCalledWith(table);
     expect(where).toHaveBeenCalledTimes(1);
-    expect(where).toHaveBeenCalledWith(primary);
+    expect(where).toHaveBeenCalledWith(id);
     expect(_delete).toHaveBeenCalledTimes(1);
     expect(_delete).toHaveBeenCalledWith();
   });

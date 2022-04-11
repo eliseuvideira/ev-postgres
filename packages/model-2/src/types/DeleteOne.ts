@@ -3,12 +3,12 @@ import { Modify } from "./Modify";
 
 export interface DeleteOneProps<Primary> {
   database: Knex;
-  primary: Primary;
+  id: Primary;
   modify?: Modify;
 }
 
 export type DeleteOne<Primary> = ({
   database,
-  primary,
+  id,
   modify,
 }: DeleteOneProps<Primary>) => Promise<void>;

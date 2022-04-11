@@ -164,7 +164,7 @@ describe("createModel", () => {
 
     const name = sample().name;
 
-    const pkg = await model.findById({ database, primary: { name } });
+    const pkg = await model.findById({ database, id: { name } });
 
     if (!pkg) {
       fail();
@@ -181,7 +181,7 @@ describe("createModel", () => {
 
     const name = "invalid";
 
-    const pkg = await model.findById({ database, primary: { name } });
+    const pkg = await model.findById({ database, id: { name } });
 
     expect(pkg).not.toBeTruthy();
     expect(pkg).toBe(null);
@@ -396,7 +396,7 @@ describe("createModel", () => {
 
     const value = await model.updateOne({
       database,
-      primary: item,
+      id: item,
       values: { downloads: 0 },
     });
 
@@ -410,7 +410,7 @@ describe("createModel", () => {
 
     const value = await model.updateOne({
       database,
-      primary: { name: "any" },
+      id: { name: "any" },
       values: { downloads: 1 },
     });
 
@@ -471,7 +471,7 @@ describe("createModel", () => {
 
     const item = sample();
 
-    await model.deleteOne({ database, primary: item });
+    await model.deleteOne({ database, id: item });
 
     const items = await model.find({ database });
 

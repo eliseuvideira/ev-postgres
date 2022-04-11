@@ -14,10 +14,10 @@ export const createFindById =
   }: CreateFindByIdProps<Primary>): FindById<Props, Primary> =>
   async ({
     database,
-    primary,
+    id,
     modify,
   }: FindByIdProps<Primary>): Promise<Props | null> => {
-    const query = source(database).where(strip(primary));
+    const query = source(database).where(strip(id));
 
     if (modify) {
       query.modify(modify);

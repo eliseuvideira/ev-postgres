@@ -22,7 +22,7 @@ describe("createFindById", () => {
 
     const pkg = sample();
 
-    const value = await findById({ database, primary: { name: pkg.name } });
+    const value = await findById({ database, id: { name: pkg.name } });
 
     expect(value).toEqual(item);
     expect(first).toHaveBeenCalledTimes(1);

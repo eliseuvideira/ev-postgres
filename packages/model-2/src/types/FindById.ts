@@ -3,12 +3,12 @@ import { Modify } from "./Modify";
 
 export interface FindByIdProps<Primary> {
   database: Knex;
-  primary: Primary;
+  id: Primary;
   modify?: Modify;
 }
 
 export type FindById<Props, Primary> = ({
   database,
-  primary,
+  id,
   modify,
 }: FindByIdProps<Primary>) => Promise<Props | null>;

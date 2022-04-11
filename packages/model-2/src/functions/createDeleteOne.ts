@@ -14,10 +14,10 @@ export const createDeleteOne =
   }: CreateDeleteOneProps<Primary>): DeleteOne<Primary> =>
   async ({
     database,
-    primary,
+    id: id,
     modify,
   }: DeleteOneProps<Primary>): Promise<void> => {
-    const query = source(database).where(strip(primary));
+    const query = source(database).where(strip(id));
 
     if (modify) {
       query.modify(modify);

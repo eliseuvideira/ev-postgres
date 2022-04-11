@@ -14,11 +14,11 @@ export const createUpdateOne =
   }: CreateUpdateOneProps<Primary>): UpdateOne<Props, Primary> =>
   async ({
     database,
-    primary,
+    id,
     values,
     modify,
   }: UpdateOneProps<Props, Primary>): Promise<Props | null> => {
-    const query = source(database).where(strip(primary)).update(values);
+    const query = source(database).where(strip(id)).update(values);
 
     if (modify) {
       query.modify(modify);
