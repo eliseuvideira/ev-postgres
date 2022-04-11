@@ -9,10 +9,13 @@ export type Update<T> = (
 ) => Promise<T[]>;
 
 export const createUpdate =
-  <T>(table: string): Update<T> =>
+  <T>(
+    table: string,
+    query: (database: Knex) => Knex.QueryBuilder = (database) =>
+      database.from(table)
+  ): Update<T> =>
   async (database: Knex, filter: FilterProps<T>, values: Partial<T>) => {
-    const rows: any[] = await database
-      .from(table)
+    const rows: any[] = await query(database)
       .modify(parseFilter(filter))
       .update(values)
       .returning("*");

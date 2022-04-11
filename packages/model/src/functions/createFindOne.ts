@@ -8,12 +8,13 @@ export type FindOne<T> = (
 ) => Promise<T | null>;
 
 export const createFindOne =
-  <T>(table: string): FindOne<T> =>
+  <T>(
+    table: string,
+    query: (database: Knex) => Knex.QueryBuilder = (database) =>
+      database.from(table)
+  ): FindOne<T> =>
   async (database: Knex, filter: FilterProps<T> = {}) => {
-    const row: any = await database
-      .from(table)
-      .modify(parseFilter(filter))
-      .first();
+    const row: any = await query(database).modify(parseFilter(filter)).first();
 
     if (!row) {
       return null;

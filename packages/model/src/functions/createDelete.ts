@@ -8,7 +8,11 @@ export type Delete<T> = (
 ) => Promise<void>;
 
 export const createDelete =
-  <T>(table: string): Delete<T> =>
+  <T>(
+    table: string,
+    query: (database: Knex) => Knex.QueryBuilder = (database) =>
+      database.from(table)
+  ): Delete<T> =>
   async (database: Knex, filter: FilterProps<T> = {}) => {
-    await database.from(table).modify(parseFilter(filter)).delete();
+    await query(database).modify(parseFilter(filter)).delete();
   };

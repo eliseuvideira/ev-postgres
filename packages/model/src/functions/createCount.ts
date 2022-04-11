@@ -8,10 +8,13 @@ export type Count<T> = (
 ) => Promise<number>;
 
 export const createCount =
-  <T>(table: string): Count<T> =>
+  <T>(
+    table: string,
+    query: (database: Knex) => Knex.QueryBuilder = (database) =>
+      database.from(table)
+  ): Count<T> =>
   async (database: Knex, filter: FilterProps<T> = {}) => {
-    const { count } = await database
-      .from(table)
+    const { count } = await query(database)
       .modify(parseFilter(filter))
       .count()
       .first();

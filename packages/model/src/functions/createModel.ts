@@ -1,3 +1,4 @@
+import { Knex } from "knex";
 import { Count, createCount } from "./createCount";
 import { createDelete, Delete } from "./createDelete";
 import { createDeleteOne, DeleteOne } from "./createDeleteOne";
@@ -27,19 +28,21 @@ export interface ModelProps<T, Primary extends Partial<T>> {
 
 export const createModel = <T, Primary extends Partial<T>>(
   table: string,
-  primary: (item: Primary) => Primary
+  primary: (item: Primary) => Primary,
+  query: (database: Knex) => Knex.QueryBuilder = (database) =>
+    database.from(table)
 ): ModelProps<T, Primary> => {
-  const find = createFind<T>(table);
-  const findById = createFindById<T, Primary>(table, primary);
-  const findOne = createFindOne<T>(table);
-  const count = createCount<T>(table);
+  const find = createFind<T>(table, query);
+  const findById = createFindById<T, Primary>(table, primary, query);
+  const findOne = createFindOne<T>(table, query);
+  const count = createCount<T>(table, query);
   const exists = createExists<T>(count);
-  const insert = createInsert<T>(table);
-  const insertOne = createInsertOne<T>(table);
-  const update = createUpdate<T>(table);
-  const updateOne = createUpdateOne<T, Primary>(table, primary);
-  const _delete = createDelete<T>(table);
-  const deleteOne = createDeleteOne<T, Primary>(table, primary);
+  const insert = createInsert<T>(table, query);
+  const insertOne = createInsertOne<T>(table, query);
+  const update = createUpdate<T>(table, query);
+  const updateOne = createUpdateOne<T, Primary>(table, primary, query);
+  const _delete = createDelete<T>(table, query);
+  const deleteOne = createDeleteOne<T, Primary>(table, primary, query);
 
   return {
     table,

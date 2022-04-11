@@ -8,9 +8,13 @@ export type Find<T> = (
 ) => Promise<T[]>;
 
 export const createFind =
-  <T>(table: string): Find<T> =>
+  <T>(
+    table: string,
+    query: (database: Knex) => Knex.QueryBuilder = (database) =>
+      database.from(table)
+  ): Find<T> =>
   async (database: Knex, filter: SortableFilterProps<T> = {}) => {
-    const rows: any[] = await database.from(table).modify(parseFilter(filter));
+    const rows: any[] = await query(database).modify(parseFilter(filter));
 
     return rows as T[];
   };
