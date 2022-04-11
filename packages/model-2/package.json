@@ -1,0 +1,35 @@
+{
+  "name": "@ev-postgres/model-2",
+  "version": "0.0.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "files": [
+    "lib/**/*"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "repository": "git@github.com:eliseuvideira/ev-postgres.git",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "rm -rf lib && yarn build"
+  },
+  "devDependencies": {
+    "@ev-fns/dotenv": "^1.0.1",
+    "@types/node": "^15.12.4",
+    "knex": "^0.95.6",
+    "pg": "^8.6.0"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "knex": "^0.95.6",
+    "pg": "^8.6.0"
+  },
+  "keywords": [
+    "postgres",
+    "model",
+    "database",
+    "functions"
+  ]
+}
