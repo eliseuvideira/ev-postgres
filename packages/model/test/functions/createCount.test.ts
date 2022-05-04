@@ -5,7 +5,7 @@ import { table } from "../utils/table";
 
 describe("createCount", () => {
   it("creates a count method", async () => {
-    expect.assertions(8);
+    expect.assertions(9);
 
     const pkg = sample();
 
@@ -19,10 +19,11 @@ describe("createCount", () => {
     const builder = {
       andWhere,
     };
+    const clearSelect = jest.fn(() => ({ count: countFn }));
     const modify = jest.fn((modify) => {
       modify(builder);
 
-      return { count: countFn };
+      return { clearSelect };
     });
     const from = jest.fn(() => ({ modify }));
 
@@ -33,6 +34,7 @@ describe("createCount", () => {
     expect(value).toBe(totalCount);
     expect(first).toHaveBeenCalledTimes(1);
     expect(countFn).toHaveBeenCalledTimes(1);
+    expect(clearSelect).toHaveBeenCalledTimes(1);
     expect(modify).toHaveBeenCalledTimes(1);
     expect(andWhere).toHaveBeenCalledTimes(1);
     expect(andWhere).toHaveBeenCalledWith("name", "=", pkg.name);
