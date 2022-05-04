@@ -19,7 +19,7 @@ export const createCount =
       query.modify(modify);
     }
 
-    const { count } = await query.count().first();
+    const { count } = await query.clearSelect().count().first();
 
     return +count;
   };
