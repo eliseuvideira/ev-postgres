@@ -16,6 +16,7 @@ export const createCount =
   async (database: Knex, filter: FilterProps<T> = {}) => {
     const { count } = await query(database)
       .modify(parseFilter(filter))
+      .clearSelect()
       .count()
       .first();
 
