@@ -48,6 +48,39 @@ export const parseFilter =
         builder.whereNotNull(key);
       }
     }
+    if (filter.$le) {
+      const keys = Object.keys(filter.$le) as (keyof T)[];
+      for (const key of keys) {
+        builder.andWhere(key, "<=", filter.$le[key] as any);
+      }
+    }
+    if (filter.$lt) {
+      const keys = Object.keys(filter.$lt) as (keyof T)[];
+      for (const key of keys) {
+        builder.andWhere(key, "<", filter.$lt[key] as any);
+      }
+    }
+    if (filter.$ge) {
+      const keys = Object.keys(filter.$ge) as (keyof T)[];
+      for (const key of keys) {
+        builder.andWhere(key, ">=", filter.$ge[key] as any);
+      }
+    }
+    if (filter.$gt) {
+      const keys = Object.keys(filter.$gt) as (keyof T)[];
+      for (const key of keys) {
+        builder.andWhere(key, ">", filter.$gt[key] as any);
+      }
+    }
+    if (filter.$between) {
+      const keys = Object.keys(filter.$between) as (keyof T & string)[];
+      for (const key of keys) {
+        builder.andWhereBetween(key, [
+          filter.$between[key][0],
+          filter.$between[key][1],
+        ]);
+      }
+    }
     if (filter.$limit) {
       builder.limit(filter.$limit);
     }

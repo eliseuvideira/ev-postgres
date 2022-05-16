@@ -529,6 +529,187 @@ describe("createModel", () => {
     );
   });
 
+  it("finds the minimal using filter $le", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const minimal = packages.reduce((prev, curr) =>
+      prev.downloads < curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $le: {
+        downloads: minimal.downloads,
+      },
+    });
+
+    expect(items.length).toBe(1);
+    expect(items[0]).toEqual(minimal);
+  });
+
+  it("finds all using filter $le", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const maximum = packages.reduce((prev, curr) =>
+      prev.downloads > curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $le: {
+        downloads: maximum.downloads,
+      },
+    });
+
+    expect(items.length).toBe(packages.length);
+    expect(items.sort(ascending)).toEqual(packages.sort(ascending));
+  });
+
+  it("finds none with minimal using filter $lt", async () => {
+    expect.assertions(1);
+
+    const model = __model();
+
+    const minimal = packages.reduce((prev, curr) =>
+      prev.downloads < curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $lt: {
+        downloads: minimal.downloads,
+      },
+    });
+
+    expect(items.length).toBe(0);
+  });
+
+  it("finds all except maximum using filter $lt", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const maximum = packages.reduce((prev, curr) =>
+      prev.downloads > curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $lt: {
+        downloads: maximum.downloads,
+      },
+    });
+
+    expect(items.length).toBe(packages.length - 1);
+    expect(items.sort(ascending)).toEqual(
+      packages.filter((pkg) => pkg.name !== maximum.name).sort(ascending)
+    );
+  });
+
+  it("finds the maximum using filter $ge", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const maximum = packages.reduce((prev, curr) =>
+      prev.downloads > curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $ge: {
+        downloads: maximum.downloads,
+      },
+    });
+
+    expect(items.length).toBe(1);
+    expect(items[0]).toEqual(maximum);
+  });
+
+  it("finds all using filter $ge", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const minimum = packages.reduce((prev, curr) =>
+      prev.downloads < curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $ge: {
+        downloads: minimum.downloads,
+      },
+    });
+
+    expect(items.length).toBe(packages.length);
+    expect(items.sort(ascending)).toEqual(packages.sort(ascending));
+  });
+
+  it("finds none with the maximum using filter $gt", async () => {
+    expect.assertions(1);
+
+    const model = __model();
+
+    const maximum = packages.reduce((prev, curr) =>
+      prev.downloads > curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $gt: {
+        downloads: maximum.downloads,
+      },
+    });
+
+    expect(items.length).toBe(0);
+  });
+
+  it("finds all except maximum using filter $gt", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const minimum = packages.reduce((prev, curr) =>
+      prev.downloads < curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $gt: {
+        downloads: minimum.downloads,
+      },
+    });
+
+    expect(items.length).toBe(packages.length - 1);
+    expect(items.sort(ascending)).toEqual(
+      packages.filter((pkg) => pkg.name !== minimum.name).sort(ascending)
+    );
+  });
+
+  it("finds using filter $between", async () => {
+    expect.assertions(2);
+
+    const model = __model();
+
+    const maximum = packages.reduce((prev, curr) =>
+      prev.downloads > curr.downloads ? prev : curr
+    );
+
+    const minimum = packages.reduce((prev, curr) =>
+      prev.downloads < curr.downloads ? prev : curr
+    );
+
+    const items = await model.find(database, {
+      $between: {
+        downloads: [minimum.downloads + 1, maximum.downloads - 1],
+      },
+    });
+
+    expect(items.length).toBe(packages.length - 2);
+    expect(items.sort(ascending)).toEqual(
+      packages
+        .filter((pkg) => pkg.name !== minimum.name && pkg.name !== maximum.name)
+        .sort(ascending)
+    );
+  });
+
   it("finds using filter $like", async () => {
     expect.assertions(3);
 

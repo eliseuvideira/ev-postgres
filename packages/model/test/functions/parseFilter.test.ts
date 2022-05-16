@@ -203,4 +203,117 @@ describe("parseFilter", () => {
     expect(whereNotNull).toHaveBeenCalledTimes(1);
     expect(whereNotNull).toHaveBeenLastCalledWith("homepage");
   });
+
+  it("sets the $le filter", () => {
+    expect.assertions(3);
+
+    const pkg = sample();
+
+    const modify = parseFilter<PackageProps>({
+      $le: { downloads: pkg.downloads },
+    });
+
+    const andWhere = jest.fn();
+
+    const builder = {
+      andWhere,
+    };
+
+    modify(builder as any);
+
+    expect(andWhere).toHaveBeenCalled();
+    expect(andWhere).toHaveBeenCalledTimes(1);
+    expect(andWhere).toHaveBeenCalledWith("downloads", "<=", pkg.downloads);
+  });
+
+  it("sets the $lt filter", () => {
+    expect.assertions(3);
+
+    const pkg = sample();
+
+    const modify = parseFilter<PackageProps>({
+      $lt: { downloads: pkg.downloads },
+    });
+
+    const andWhere = jest.fn();
+
+    const builder = {
+      andWhere,
+    };
+
+    modify(builder as any);
+
+    expect(andWhere).toHaveBeenCalled();
+    expect(andWhere).toHaveBeenCalledTimes(1);
+    expect(andWhere).toHaveBeenCalledWith("downloads", "<", pkg.downloads);
+  });
+
+  it("sets the $ge filter", () => {
+    expect.assertions(3);
+
+    const pkg = sample();
+
+    const modify = parseFilter<PackageProps>({
+      $ge: { downloads: pkg.downloads },
+    });
+
+    const andWhere = jest.fn();
+
+    const builder = {
+      andWhere,
+    };
+
+    modify(builder as any);
+
+    expect(andWhere).toHaveBeenCalled();
+    expect(andWhere).toHaveBeenCalledTimes(1);
+    expect(andWhere).toHaveBeenCalledWith("downloads", ">=", pkg.downloads);
+  });
+
+  it("sets the $gt filter", () => {
+    expect.assertions(3);
+
+    const pkg = sample();
+
+    const modify = parseFilter<PackageProps>({
+      $gt: { downloads: pkg.downloads },
+    });
+
+    const andWhere = jest.fn();
+
+    const builder = {
+      andWhere,
+    };
+
+    modify(builder as any);
+
+    expect(andWhere).toHaveBeenCalled();
+    expect(andWhere).toHaveBeenCalledTimes(1);
+    expect(andWhere).toHaveBeenCalledWith("downloads", ">", pkg.downloads);
+  });
+
+  it("sets the $between filter", () => {
+    expect.assertions(3);
+
+    const pkg = sample();
+
+    const modify = parseFilter<PackageProps>({
+      $between: { downloads: [0, pkg.downloads] },
+    });
+
+    const andWhereBetween = jest.fn();
+
+    const builder = {
+      andWhereBetween,
+    };
+
+    modify(builder as any);
+
+    expect(andWhereBetween).toHaveBeenCalled();
+    expect(andWhereBetween).toHaveBeenCalledTimes(1);
+    expect(andWhereBetween).toHaveBeenCalledWith("downloads", [
+      0,
+      pkg.downloads,
+    ]);
+  });
 });
