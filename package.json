@@ -23,11 +23,11 @@
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "clean": "lerna clean",
-    "coverage": "jest --coverage && xdg-open coverage/lcov-report/index.html &>/dev/null",
+    "coverage": "jest --runInBand --coverage && xdg-open coverage/lcov-report/index.html &>/dev/null",
     "format": "prettier --write 'packages/*/src/**'",
     "lint": "eslint --max-warnings=0 'packages/*/src/**'",
-    "test": "jest",
-    "watch": "jest --watch",
+    "test": "jest --runInBand",
+    "watch": "jest --runInBand --watch",
     "prepare": "husky install"
   }
 }
